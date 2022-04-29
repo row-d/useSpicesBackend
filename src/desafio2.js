@@ -1,21 +1,67 @@
+import { unlink } from 'fs/promises'
 import { faker } from '@faker-js/faker'
-
 import Contenedor from './Contenedor.js'
-import Usuario from './Usuario.js'
 
-const container = new Contenedor('users.json')
-
-// const user = new Usuario(faker.name.firstName(), faker.name.lastName())
-const rest = new Array(10)
-  .fill(new Usuario(faker.name.firstName(), faker.name.lastName()))
-  .map((obj, i) => ({ ...obj, id: i }))
-
-;(async () => {
-  await container.deleteAll()
-  for (let i = 0; i < rest.length; i++) {
-    await container.save(rest[i])
+class Product {
+  constructor(title, price, thumbnail) {
+    this.title = title
+    this.price = price
+    this.thumbnail = thumbnail
   }
-  const data = await container.getAll()
-  console.table(data)
-  console.log(await container.getById(5))
+}
+
+const fileName = 'productos.txt'
+const products = new Contenedor(fileName)
+
+// Testing methods
+;(async () => {
+  const firstProductId = await products.save(
+    new Product(
+      faker.commerce.productName(),
+      +faker.commerce.price(),
+      faker.image.imageUrl()
+    )
+  )
+
+  const unknownProduct = await products.getById(9999)
+
+  // generate more products
+  for (let i = 0; i < 10; i++) {
+    await products.save(
+      new Product(
+        faker.commerce.productName(),
+        +faker.commerce.price(),
+        faker.image.imageUrl()
+      )
+    )
+  }
+
+  console.log('firstProductId:', firstProductId)
+  console.log('unknownProduct:', unknownProduct)
+  console.log('knownProduct:', await products.getById(5))
+  console.table(await products.getAll())
+
+  console.log('deleting 5th product...')
+  await products.deleteById(5)
+  console.table(await products.getAll())
+
+  console.log('deleting last product...')
+  await products.deleteById(11)
+  console.table(await products.getAll())
+
+  console.log('adding a new product...')
+  await products.save(
+    new Product(
+      faker.commerce.productName(),
+      +faker.commerce.price(),
+      faker.image.imageUrl()
+    )
+  )
+  console.table(await products.getAll())
+
+  console.log('delete all products...')
+  await products.deleteAll()
+  console.table(await products.getAll())
+
+  await unlink(fileName)
 })()

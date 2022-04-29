@@ -1,11 +1,31 @@
 import path from 'path'
-import { writeFile } from 'fs/promises'
-import { randomUser } from './utils/randomUser'
+import { unlink, writeFile, readdir } from 'fs/promises'
+
 import Contenedor from '../../Contenedor'
+import { randomUser } from '../../utilities/randomUser'
 
 const absPath = path.resolve('./src/tests')
 
 describe('save method', () => {
+  afterEach(async () => {
+    const thisPath = await readdir(absPath)
+    const regex = /\.(json|txt)$/
+    thisPath
+      .filter((path) => regex.test(path))
+      .forEach(async (fileName) => {
+        await unlink(absPath + '/' + fileName)
+      })
+  })
+
+  test('si el archivo no existe crear archivo', async () => {
+    const userTest = randomUser()
+    const file = absPath + '/save2.json'
+    const updatedFile = new Contenedor(file)
+
+    const id = await updatedFile.save(userTest)
+    expect(id).toBe(await updatedFile.lastId)
+  })
+
   test('si el archivo existe agregar dato al archivo', async () => {
     const userTest = randomUser()
     const file = absPath + '/save1.json'
@@ -16,14 +36,6 @@ describe('save method', () => {
       },
     ])
     await writeFile(file, firstData)
-    const updatedFile = new Contenedor(file)
-
-    const id = await updatedFile.save(userTest)
-    expect(id).toBe(await updatedFile.lastId)
-  })
-  test('si el archivo no existe crear archivo', async () => {
-    const userTest = randomUser()
-    const file = absPath + '/save2.json'
     const updatedFile = new Contenedor(file)
 
     const id = await updatedFile.save(userTest)
@@ -55,6 +67,4 @@ describe('save method', () => {
     const id = await updatedFile.save(userTest)
     expect(id).toBe(1)
   })
-
-  //  TODO: test('si ya existe un objeto igual no debe haber un duplicado', async () => {})
 })
