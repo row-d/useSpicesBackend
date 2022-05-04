@@ -1,0 +1,68 @@
+[
+  {
+    "title": "Rustic Plastic Bike",
+    "price": 869,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 1
+  },
+  {
+    "title": "Gorgeous Soft Shoes",
+    "price": 63,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 2
+  },
+  {
+    "title": "Fantastic Soft Mouse",
+    "price": 657,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 3
+  },
+  {
+    "title": "Sleek Frozen Gloves",
+    "price": 32,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 4
+  },
+  {
+    "title": "Gorgeous Plastic Table",
+    "price": 59,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 5
+  },
+  {
+    "title": "Recycled Steel Salad",
+    "price": 136,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 6
+  },
+  {
+    "title": "Ergonomic Rubber Fish",
+    "price": 855,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 7
+  },
+  {
+    "title": "Luxurious Metal Cheese",
+    "price": 224,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 8
+  },
+  {
+    "title": "Intelligent Rubber Tuna",
+    "price": 104,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 9
+  },
+  {
+    "title": "Fantastic Steel Bike",
+    "price": 197,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 10
+  },
+  {
+    "title": "Modern Steel Gloves",
+    "price": 315,
+    "thumbnail": "http://loremflickr.com/640/480",
+    "id": 11
+  }
+]
