@@ -1,4 +1,4 @@
-import Usuario from "./Usuario";
+import Usuario from "../Usuario";
 
 const David = new Usuario("David", "Gomez");
 
