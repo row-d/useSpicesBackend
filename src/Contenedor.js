@@ -34,6 +34,17 @@ class Contenedor {
     return this.lastId
   }
 
+  async update(ObjectId, ObjectData) {
+    const data = await this.getAll()
+    const index = data.findIndex((item) => item.id === ObjectId)
+    if (index !== -1) {
+      data[index] = { ObjectData, id: ObjectId }
+      const newData = JSON.stringify(data, null, 2)
+      await writeFile(this.file, newData)
+    }
+    return index
+  }
+
   async getById(ObjectId) {
     const data = await this.getAll()
     return data.find(({ id }) => id === ObjectId) || null
