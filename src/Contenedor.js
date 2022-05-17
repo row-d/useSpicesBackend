@@ -38,7 +38,7 @@ class Contenedor {
     const data = await this.getAll()
     const index = data.findIndex((item) => item.id === ObjectId)
     if (index !== -1) {
-      data[index] = { ObjectData, id: ObjectId }
+      data[index] = { ...ObjectData, id: ObjectId }
       const newData = JSON.stringify(data, null, 2)
       await writeFile(this.file, newData)
     }
