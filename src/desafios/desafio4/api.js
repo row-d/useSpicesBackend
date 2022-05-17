@@ -3,6 +3,7 @@ import multer from 'multer'
 import Contenedor from '../../Contenedor.js'
 
 const productsApi = express.Router()
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/thumbnails')
@@ -13,7 +14,7 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage })
 
-const contenedor = new Contenedor('../productos.txt')
+const contenedor = new Contenedor('../productos.json')
 
 productsApi.use(express.json())
 productsApi.use(express.urlencoded({ extended: true }))
@@ -50,23 +51,43 @@ productsApi.post('/', upload.single('thumbnail'), async (req, res) => {
     thumbnail: file.path.replace('public', ''),
   }
 
-  await contenedor.save(parsedProduct)
+  const id = await contenedor.save(parsedProduct)
 
-  res.send(file)
+  res.send({ ...parsedProduct, id })
 
   console.log(`${file.originalname} archivado en ${file.path}`)
 })
 
 // recibe y actualiza un producto según su id.
-productsApi.put('/:id', async (req, res) => {
+productsApi.put('/:id', upload.single('thumbnail'), async (req, res) => {
   const id = Number(req.params.id)
-  const producto = req.body
-  const status = await contenedor.update(id, producto)
-  if (status !== -1) {
-    res.send({ id })
-    console.log(`Producto ${id} actualizado`)
+  const product = { ...req.body }
+  const actual = await contenedor.getById(id)
+  const file = req.file
+
+  if (!actual) {
+    res.status(404).send({ error: 'Producto no encontrado' })
   }
-  res.status(404).send({ error: 'Producto no encontrado' })
+
+  const parsedProduct = {}
+
+  if (product.title !== actual.title) {
+    parsedProduct.title = product.title
+  }
+
+  if (product.price !== actual.price) {
+    parsedProduct.price = Number(product.price)
+  }
+
+  file
+    ? (parsedProduct.thumbnail = file.path.replace('public', ''))
+    : (parsedProduct.thumbnail = actual.thumbnail)
+
+  await contenedor.update(id, parsedProduct)
+
+  res.send({ ...parsedProduct, id })
+
+  console.log(`Producto ${id} actualizado`)
 })
 
 // elimina un producto según su id.

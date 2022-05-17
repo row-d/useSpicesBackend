@@ -23,7 +23,7 @@ const postProduct = async (product) => {
 const putProduct = async (id, product) => {
   const response = await fetch(`/api/productos/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(product),
+    body: product,
   })
   const responseJson = await response.json()
   return responseJson
