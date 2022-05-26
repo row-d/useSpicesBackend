@@ -11,16 +11,16 @@ const controller = new ApiController('../productos.json')
 const port = process.env.PORT || 8080
 
 app.engine(
-  'handlebars',
+  'hbs',
   engine({
     extname: '.hbs',
-    defaultLayout: 'base.hbs',
+    defaultLayout: path.join(__dirname, '/views/index.hbs'),
     layoutsDir: path.join(__dirname, '/views/layouts'),
     partialsDir: path.join(__dirname, '/views/partials'),
   })
 )
 app.set('views', './views')
-app.set('view engine', 'handlebars')
+app.set('view engine', 'hbs')
 
 app.get('/', (req, res) => {
   res.render('layouts/base', {

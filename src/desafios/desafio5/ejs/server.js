@@ -12,7 +12,7 @@ app.set('views', './views')
 app.set('view engine', 'ejs')
 
 app.get('/', (req, res) => {
-  res.render('pages/index', {
+  res.render('index', {
     title: 'Post Product',
     navbarItems: [
       { name: 'Post Product', ref: '/', active: true },
@@ -28,7 +28,7 @@ app.post(
 )
 
 app.get('/productos', async (req, res) => {
-  res.render('pages/products', {
+  res.render('products', {
     title: 'Productos',
     navbarItems: [
       { name: 'Post Product', ref: '/', active: false },
