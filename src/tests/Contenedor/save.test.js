@@ -1,8 +1,9 @@
-import path from 'path'
-import { unlink, writeFile, readdir } from 'fs/promises'
-
-import Contenedor from '../../Contenedor'
-import { randomUser } from '../../utilities/randomUser'
+const path = require('path');
+const unlink = require('fs/promises').unlink;
+const writeFile = require('fs/promises').writeFile;
+const readdir = require('fs/promises').readdir;
+const Contenedor = require('../../Contenedor');
+const randomUser = require('../../utilities/randomUser').randomUser;
 
 const absPath = path.resolve('./src/tests')
 

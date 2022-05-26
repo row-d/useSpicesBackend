@@ -1,4 +1,4 @@
-import Usuario from "../Usuario";
+const Usuario = require("../Usuario");
 
 const David = new Usuario("David", "Gomez");
 

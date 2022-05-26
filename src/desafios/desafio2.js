@@ -1,7 +1,6 @@
-import { unlink } from 'fs/promises'
-import { faker } from '@faker-js/faker'
-import Contenedor from './Contenedor.js'
-
+const unlink = require('fs/promises').unlink;
+const faker = require('@faker-js/faker').faker;
+const Contenedor = require('./Contenedor.js');
 class Product {
   constructor(title, price, thumbnail) {
     this.title = title

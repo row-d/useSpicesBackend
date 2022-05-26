@@ -1,6 +1,6 @@
-import express from 'express'
-import multer from 'multer'
-import Contenedor from '../../Contenedor.js'
+const express = require('express');
+const multer = require('multer');
+const Contenedor = require('../../Contenedor.js');
 
 const productsApi = express.Router()
 
@@ -66,7 +66,7 @@ productsApi.put('/:id', upload.single('thumbnail'), async (req, res) => {
   const file = req.file
 
   if (!actual) {
-    res.status(404).send({ error: 'Producto no encontrado' })
+    return res.status(404).send({ error: 'Producto no encontrado' })
   }
 
   const parsedProduct = {}
@@ -96,4 +96,4 @@ productsApi.delete('/:id', async (req, res) => {
   console.log(`Producto ${req.params.id} eliminado`)
 })
 
-export default productsApi
+module.exports = productsApi

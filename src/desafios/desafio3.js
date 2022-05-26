@@ -1,5 +1,5 @@
-import express from 'express'
-import Contenedor from '../Contenedor.js'
+const express = require('express');
+const Contenedor = require('../Contenedor.js');
 
 const app = express()
 const port = process.env.PORT || 8080

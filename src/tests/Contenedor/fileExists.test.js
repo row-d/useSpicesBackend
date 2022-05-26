@@ -1,6 +1,6 @@
-import path from 'path'
-import { writeFile } from 'fs/promises'
-import Contenedor from '../../Contenedor'
+const path = require('path');
+const writeFile = require('fs/promises').writeFile;
+const Contenedor = require('../../Contenedor');
 
 
 const absPath = path.resolve('./src/tests')
