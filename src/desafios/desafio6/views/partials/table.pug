@@ -1,0 +1,10 @@
+.overflow-x-auto.w-full.max-h-full
+  table#products.table.w-full
+      thead
+        tr
+          each title in headers
+            th #{title}
+      tbody.overflow-y-auto
+        each product in products
+          tr
+            include ../templates/row.pug
