@@ -81,6 +81,11 @@ async function saveProduct(formData) {
 postForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   const data = await saveProduct(new FormData(postForm))
+  socket.emit('producto:post', data)
+})
+
+socket.on('producto:post', async (data) => {
+  console.log(data)
   const template = await getRowTemplate(data)
   const row = document.createElement('tr')
   row.innerHTML = template

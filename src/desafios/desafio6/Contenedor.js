@@ -3,9 +3,11 @@ const constants = require('fs').constants
 
 class Contenedor {
   constructor(fileName) {
-    this.fileExists().then((res) => {
-      if (!res) writeFile(fileName, '[]')
-    })
+    ;(async () => {
+      if ((await this.fileExists()) === false) {
+        await writeFile(fileName, '[]')
+      }
+    })()
     this.file = fileName
     this.lastId = 0
   }

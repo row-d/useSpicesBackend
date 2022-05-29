@@ -25,16 +25,17 @@ app.use('/productos', productosController.route)
 
 app.get('/', async (req, res) => {
   res.render('layouts/index', {
-    headers: ['title', 'price', 'thumbnail'],
+    headers: ['id', 'title', 'price', 'thumbnail'],
     products: await productosController.contenedor.getAll(),
     messages: await chatsController.contenedor.getAll(),
   })
 })
 
 app.post('/rowTemplate', (req, res) => {
-  const { title, price,thumbnail } = req.body
+  const { id, title, price, thumbnail } = req.body
   res.render('templates/row', {
     product: {
+      id,
       title,
       price,
       thumbnail,
@@ -57,6 +58,9 @@ app.post('/chatBoxTemplate', (req, res) => {
 io.on('connection', (socket) => {
   socket.on('chat:message', (msg) => {
     io.emit('chat:message', msg)
+  })
+  socket.on('producto:post', (data) => {
+    io.emit('producto:post', data)
   })
 })
 
