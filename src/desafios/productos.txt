@@ -1,1 +1,0 @@
-[{"title":"Rustic Plastic Bike","price":869,"thumbnail":"http://loremflickr.com/640/480/bike?random=1","id":1},{"title":"Gorgeous Soft Shoes","price":63,"thumbnail":"http://loremflickr.com/640/480/shoe?random=2","id":2},{"title":"Fantastic Soft Mouse","price":657,"thumbnail":"http://loremflickr.com/640/480/food,mouse?random=3","id":3}]
