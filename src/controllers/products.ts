@@ -1,27 +1,23 @@
+import { faker } from '@faker-js/faker'
 import { Request, Response } from 'express'
 import fs from 'fs/promises'
 import multer from 'multer'
 import path from 'path'
 
-import Container from '../../lib/ContainerSQL'
-import body from '../types/body'
+import ProductContainerMongodb from '../Containers/DAOs/products/ProductContainerMongodb'
 
 class Controller {
   staticFolder: string
-  contenedor: Container
+  contenedor: ProductContainerMongodb
   storage: multer.StorageEngine
   upload: multer.Multer
 
-  constructor(
-    table: string,
-    config: object,
-    staticFolder = '../public/thumbnails'
-  ) {
+  constructor(staticFolder = '../public/thumbnails') {
     this.staticFolder = path.resolve(__dirname, staticFolder)
 
     fs.mkdir(this.staticFolder, { recursive: true })
 
-    this.contenedor = new Container(table, config)
+    this.contenedor = new ProductContainerMongodb()
 
     this.storage = multer.diskStorage({
       destination: (req, file, cb) => {
@@ -43,7 +39,7 @@ class Controller {
   }
 
   async getId(req: Request, res: Response) {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const producto = await this.contenedor.getById(id)
     if (producto) {
       res.send(producto)
@@ -69,7 +65,7 @@ class Controller {
   }
 
   async putId(req: Request, res: Response) {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const reqData = { ...req.body }
     const actual = await this.contenedor.getById(id)
     const file = req.file
@@ -78,7 +74,7 @@ class Controller {
       return res.status(404).send({ error: 'Producto no encontrado' })
     }
 
-    const parsedProduct = { ...reqData } as body
+    const parsedProduct = { ...reqData }
     if (file) {
       parsedProduct.thumbnail = file.path.replace('public', '')
     }
@@ -88,10 +84,20 @@ class Controller {
   }
 
   async deleteId(req: Request, res: Response) {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const deletedId = await this.contenedor.deleteById(id)
     console.log(deletedId)
     res.send({ status: 200, message: deletedId })
+  }
+
+  async testGet(req: Request, res: Response) {
+    res.send(
+      Array.from({ length: 5 }, () => ({
+        title: faker.commerce.product(),
+        price: faker.commerce.price(),
+        thumbnail: faker.image.imageUrl(),
+      }))
+    )
   }
 }
 

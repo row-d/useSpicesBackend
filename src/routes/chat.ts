@@ -1,13 +1,9 @@
 import express from 'express'
 import path from 'path'
 
-import config from '../connections/sqlite'
-import Controller from '../controllers/api'
+import Controller from '../controllers/chats'
 
-const controller = new Controller(
-  'messages',
-  process.env.NODE_ENV === 'production' ? config.production : config.development
-)
+const controller = new Controller()
 const route = express.Router()
 
 route.use(
