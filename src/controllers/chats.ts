@@ -1,13 +1,15 @@
 import { Request, Response } from 'express'
 import fs from 'fs/promises'
 import multer from 'multer'
+import { normalize, schema } from 'normalizr'
 import path from 'path'
 
+import AbstractContainer from '../Containers/AbstractContainer'
 import ChatContainerMongodb from '../Containers/DAOs/chats/ChatContainerMongodb'
 
-class Controller {
+class ChatsController {
   staticFolder: string
-  contenedor: ChatContainerMongodb
+  contenedor: AbstractContainer
   storage: multer.StorageEngine
   upload: multer.Multer
 
@@ -34,16 +36,33 @@ class Controller {
   }
 
   async getData(req: Request, res: Response) {
-    res.send(await this.contenedor.getAll())
+    const author = new schema.Entity('authors')
+
+    const message = new schema.Entity(
+      'messages',
+      { author },
+      { idAttribute: (entity) => entity.author.id }
+    )
+
+    const chatSchema = new schema.Entity('chat', {
+      messages: [message],
+    })
+
+    const normalizedData = normalize(
+      { id: 'messages', messages: await this.contenedor.getAll() },
+      chatSchema
+    )
+
+    res.json(normalizedData)
   }
 
   async getId(req: Request, res: Response) {
     const id = req.params.id
     const producto = await this.contenedor.getById(id)
     if (producto) {
-      res.send(producto)
+      res.json(producto)
     } else {
-      res.status(404).send({ error: 'Producto no encontrado' })
+      res.status(404).json({ error: 'Producto no encontrado' })
     }
   }
 
@@ -59,7 +78,7 @@ class Controller {
       if (redirect === true) {
         return res.redirect(302, '/')
       }
-      return res.send({ ...parsedProduct, id })
+      return res.json({ ...parsedProduct, id })
     }
   }
 
@@ -70,7 +89,7 @@ class Controller {
     const file = req.file
 
     if (!actual) {
-      return res.status(404).send({ error: 'Producto no encontrado' })
+      return res.status(404).json({ error: 'Producto no encontrado' })
     }
 
     const parsedProduct = { ...reqData }
@@ -79,15 +98,15 @@ class Controller {
     }
     await this.contenedor.update(id, parsedProduct)
 
-    res.send({ ...parsedProduct, id })
+    res.json({ ...parsedProduct, id })
   }
 
   async deleteId(req: Request, res: Response) {
     const id = req.params.id
     const deletedId = await this.contenedor.deleteById(id)
     console.log(deletedId)
-    res.send({ status: 200, message: deletedId })
+    res.json({ status: 200, message: deletedId })
   }
 }
 
-export default Controller
+export default ChatsController

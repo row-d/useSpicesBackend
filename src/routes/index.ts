@@ -1,2 +1,2 @@
-export * as chat from './chat'
-export * as products from './products'
+export { default as chat } from './chat'
+export { default as products } from './products'

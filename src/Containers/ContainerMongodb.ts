@@ -17,9 +17,6 @@ export default class ContainerMongodb implements AbstractContainer {
     modelName: string,
     schema: mongoose.SchemaDefinition
   ) {
-    if (typeof connectionURI !== 'string') {
-      throw new Error('connectionURI is required')
-    }
     this.collection = collection
     this.connectionURL = connectionURI
     this.modelName = modelName
@@ -33,38 +30,22 @@ export default class ContainerMongodb implements AbstractContainer {
   }
 
   async update(ID: ContainerId, Data: object): Promise<object | null> {
-    return await this.Model.findByIdAndUpdate(ID, Data).exec()
+    return await this.Model.findByIdAndUpdate(ID, Data)
   }
 
   async getById(ID: ContainerId): Promise<object | null> {
-    try {
-      return await this.Model.findById(ID).exec()
-    } catch (error) {
-      return null
-    }
+    return await this.Model.findById(ID)
   }
 
   async getAll(): Promise<object[]> {
-    try {
-      return await this.Model.find().exec()
-    } catch (e) {
-      return []
-    }
+    return await this.Model.find()
   }
 
   async deleteById(ID: ContainerId): Promise<object | null> {
-    try {
-      return await this.Model.findByIdAndDelete(ID).exec()
-    } catch {
-      return null
-    }
+    return await this.Model.findByIdAndDelete(ID)
   }
 
   async deleteAll(): Promise<object> {
-    try {
-      return await this.Model.deleteMany().exec()
-    } catch (e) {
-      return {}
-    }
+    return await this.Model.deleteMany()
   }
 }

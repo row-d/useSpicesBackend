@@ -1,40 +1,67 @@
+const { schema, denormalize } = normalizr
 // chat elements
 const chatForm = document.getElementById('chatForm')
-const emailInput = chatForm.querySelector('input[name="email"]')
-const messageInput = chatForm.querySelector('input[name="message"]')
+const chatFormInputs = chatForm.querySelectorAll('input')
 const chatMessages = document.getElementById('chatMessages')
 // Post product
 const postForm = document.getElementById('postProduct')
 const productsBody = document.querySelector('#products tbody')
 // template helpers
-async function getRowTemplate(data) {
-  const response = await fetch(`/rowTemplate`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-    method: 'POST',
-  })
-  const html = await response.text()
-  return html
+function getRowTemplate(product) {
+  const template = `<td>${product.id}</td>
+  <td>${product.title}</td>
+  <td>${product.price}</td>`
+
+  const image =
+    (product.thumbnail || product.avatar) &&
+    `<td>
+    <div class="avatar">
+      <div class="mask mask-squircle w-12 h-12"><img src="${
+        product.thumbnail || product.avatar
+      }" alt="${product.title}"/></div>
+    </div>
+  </td>`
+  return product.thumbnail || product.avatar ? template + image : template
 }
 
-async function getChatBoxTemplate(data) {
-  const response = await fetch(`/chatBoxTemplate`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-    method: 'POST',
-  })
-  const html = await response.text()
-  return html
+function getChatBoxTemplate(data) {
+  return `<blockquote class="flex flex-col bg-base-200 p-1 rounded">
+    <div class="flex gap-2">
+      <span class="text-blue-300">${data.author.id || data.author.email}</span>
+    </div>
+    <p class="text-green-500 indent-8">${data.text || data.message}</p>
+  </blockquote>`
 }
+// Normalizr Schemas/Entities
+const author = new schema.Entity('authors')
+const message = new schema.Entity(
+  'messages',
+  { author },
+  { idAttribute: (entity) => entity.author.id }
+)
+
+const chatSchema = new schema.Entity('chat', {
+  messages: [message],
+})
+
 // Socket.io
 const socket = io() // eslint-disable-line
 
-// Chat
+// ========= Chat =========
 // save message function
+async function getMessages() {
+  const response = await fetch('api/chats')
+  const data = await response.json()
+  return denormalize(data.result, chatSchema, data.entities)
+}
+
+function renderMessage(data) {
+  const chatBox = document.createElement('div')
+  const template = getChatBoxTemplate(data)
+  chatBox.innerHTML = template
+  chatMessages.appendChild(chatBox)
+}
+
 async function saveMessage(user) {
   const options = {
     method: 'POST',
@@ -43,39 +70,52 @@ async function saveMessage(user) {
     },
     body: JSON.stringify(user),
   }
-  await fetch('/chats', options)
+  await fetch('api/chats', options)
 }
 
 chatForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   const user = {
-    email: emailInput.value,
-    message: messageInput.value,
-    instant_sent: new Date().toLocaleString(),
+    author: {
+      id: chatFormInputs[0].value,
+      nombre: chatFormInputs[1].value,
+      apellido: chatFormInputs[2].value,
+      alias: chatFormInputs[3].value,
+      avatar: chatFormInputs[4].value,
+    },
+    text: chatFormInputs[5].value,
   }
   socket.emit('chat:message', user)
   await saveMessage(user)
   messageInput.value = ''
 })
 
-socket.on('chat:message', async ({ email, message, instant_sent }) => {
-  const chatBox = document.createElement('div')
-  const template = await getChatBoxTemplate({ email, message, instant_sent })
-  chatBox.innerHTML = template
-  chatMessages.appendChild(chatBox)
+socket.on('chat:message', async (data) => {
+  renderMessage(data)
   window.scrollTo(0, chatBox.scrollHeight)
 })
 
-// Product
-// save product function
+// ========= Product =========
+
+async function getRandomProducts() {
+  const res = await fetch('api/products/productos-test')
+  return res.json()
+}
 
 async function saveProduct(formElement) {
   const options = {
     method: 'POST',
     body: new FormData(formElement),
   }
-  const res = await fetch('/products', options)
+  const res = await fetch('api/products', options)
   return res.json()
+}
+
+function renderProduct(data) {
+  const template = getRowTemplate(data)
+  const row = document.createElement('tr')
+  row.innerHTML = template
+  productsBody.appendChild(row)
 }
 
 postForm.addEventListener('submit', async (e) => {
@@ -85,9 +125,14 @@ postForm.addEventListener('submit', async (e) => {
 })
 
 socket.on('product:post', async (data) => {
-  const template = await getRowTemplate(data)
-  const row = document.createElement('tr')
-  row.innerHTML = template
-  productsBody.appendChild(row)
+  renderProduct(data)
   postForm.reset()
+})
+
+// ========= On First Load =========
+window.addEventListener('load', async () => {
+  const { messages } = await getMessages()
+  const RandomProducts = await getRandomProducts()
+  messages.forEach(renderMessage)
+  RandomProducts.forEach(renderProduct)
 })

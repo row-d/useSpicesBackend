@@ -4,11 +4,12 @@ import fs from 'fs/promises'
 import multer from 'multer'
 import path from 'path'
 
+import AbstractContainer from '../Containers/AbstractContainer'
 import ProductContainerMongodb from '../Containers/DAOs/products/ProductContainerMongodb'
 
-class Controller {
+class ProductsController {
   staticFolder: string
-  contenedor: ProductContainerMongodb
+  contenedor: AbstractContainer
   storage: multer.StorageEngine
   upload: multer.Multer
 
@@ -34,17 +35,27 @@ class Controller {
     this.upload = multer({ storage: this.storage })
   }
 
+  async getRandom(req: Request, res: Response) {
+    res.json(
+      Array.from({ length: 5 }, () => ({
+        title: faker.commerce.product(),
+        price: faker.commerce.price(),
+        thumbnail: faker.image.imageUrl(),
+      }))
+    )
+  }
+
   async getData(req: Request, res: Response) {
-    res.send(await this.contenedor.getAll())
+    res.json(await this.contenedor.getAll())
   }
 
   async getId(req: Request, res: Response) {
     const id = req.params.id
     const producto = await this.contenedor.getById(id)
     if (producto) {
-      res.send(producto)
+      res.json(producto)
     } else {
-      res.status(404).send({ error: 'Producto no encontrado' })
+      res.status(404).json({ error: 'Producto no encontrado' })
     }
   }
 
@@ -60,7 +71,7 @@ class Controller {
       if (redirect === true) {
         return res.redirect(302, '/')
       }
-      return res.send({ ...parsedProduct, id })
+      return res.json({ ...parsedProduct, id })
     }
   }
 
@@ -71,7 +82,7 @@ class Controller {
     const file = req.file
 
     if (!actual) {
-      return res.status(404).send({ error: 'Producto no encontrado' })
+      return res.status(404).json({ error: 'Producto no encontrado' })
     }
 
     const parsedProduct = { ...reqData }
@@ -80,25 +91,15 @@ class Controller {
     }
     await this.contenedor.update(id, parsedProduct)
 
-    res.send({ ...parsedProduct, id })
+    res.json({ ...parsedProduct, id })
   }
 
   async deleteId(req: Request, res: Response) {
     const id = req.params.id
     const deletedId = await this.contenedor.deleteById(id)
     console.log(deletedId)
-    res.send({ status: 200, message: deletedId })
-  }
-
-  async testGet(req: Request, res: Response) {
-    res.send(
-      Array.from({ length: 5 }, () => ({
-        title: faker.commerce.product(),
-        price: faker.commerce.price(),
-        thumbnail: faker.image.imageUrl(),
-      }))
-    )
+    res.json({ status: 200, message: deletedId })
   }
 }
 
-export default Controller
+export default ProductsController

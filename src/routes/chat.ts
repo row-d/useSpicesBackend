@@ -1,9 +1,9 @@
 import express from 'express'
 import path from 'path'
 
-import Controller from '../controllers/chats'
+import ChatsController from '../controllers/chats'
 
-const controller = new Controller()
+const controller = new ChatsController()
 const route = express.Router()
 
 route.use(
@@ -18,4 +18,4 @@ route.post('/', controller.postData())
 route.put('/:id', controller.putId)
 route.delete('/:id', controller.deleteId)
 
-export { controller, route }
+export default route
