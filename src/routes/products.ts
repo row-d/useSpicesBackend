@@ -3,19 +3,32 @@ import path from 'path'
 
 import ProductsController from '../controllers/products'
 
-const controller = new ProductsController()
-const route = express.Router()
+export default class ProductRoute {
+  route: express.Router
+  controller: ProductsController
+  constructor() {
+    this.controller = new ProductsController()
+    this.route = express.Router()
+    this.route.use(
+      express.static(
+        path.join(__dirname, this.controller.staticFolder.split('/')[0])
+      )
+    )
+    this.route.use(express.json())
+    this.route.use(express.urlencoded({ extended: true }))
 
-route.use(
-  express.static(path.join(__dirname, controller.staticFolder.split('/')[0]))
-)
-route.use(express.json())
-route.use(express.urlencoded({ extended: true }))
-
-route.get('/', controller.getData)
-route.get('/:id', controller.getId)
-route.post('/', controller.upload.single('thumbnail'), controller.postData())
-route.put('/:id', controller.upload.single('thumbnail'), controller.putId)
-route.delete('/:id', controller.deleteId)
-
-export default route
+    this.route.get('/', this.controller.getData)
+    this.route.get('/:id', this.controller.getId)
+    this.route.post(
+      '/',
+      this.controller.upload.single('thumbnail'),
+      this.controller.postData()
+    )
+    this.route.put(
+      '/:id',
+      this.controller.upload.single('thumbnail'),
+      this.controller.putId
+    )
+    this.route.delete('/:id', this.controller.deleteId)
+  }
+}

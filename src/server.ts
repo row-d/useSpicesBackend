@@ -26,14 +26,15 @@ app.use(morgan('tiny'))
 
 // Routes
 app.use('/api/chats', new chat().route)
-// app.use('/api/products', products)
+app.use('/api/products', new products().route)
 
 app.get('/api/productos-test', (req, res) => {
   res.json(
     Array.from({ length: 5 }, () => ({
+      _id: faker.database.mongodbObjectId(),
       title: faker.commerce.product(),
       price: faker.commerce.price(),
-      thumbnail: faker.image.imageUrl(),
+      thumbnail: faker.image.imageUrl(640, 480, undefined, true),
     }))
   )
 })

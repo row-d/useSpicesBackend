@@ -4,12 +4,11 @@ import multer from 'multer'
 import { normalize, schema } from 'normalizr'
 import path from 'path'
 
-import AbstractContainer from '../Containers/AbstractContainer'
 import ChatContainerMongodb from '../Containers/DAOs/chats/ChatContainerMongodb'
 
 class ChatsController {
   staticFolder: string
-  static contenedor: AbstractContainer
+  static contenedor: ChatContainerMongodb
   storage: multer.StorageEngine
   upload: multer.Multer
 
@@ -44,8 +43,8 @@ class ChatsController {
 
     const messageEntity = new schema.Entity(
       'messages',
-      { authorEntity: authorEntity },
-      { idAttribute: (entity) => entity.author.email }
+      { authorEntity },
+      { idAttribute: '_id' }
     )
 
     const chatEntity = new schema.Entity('chat', {
@@ -59,21 +58,21 @@ class ChatsController {
       chatEntity
     )
 
-    // console.log(
-    //   (JSON.stringify(normalizedData).length / JSON.stringify(chats).length) *
-    //     100
-    // )
-
+    res.setHeader(
+      'x-percentage',
+      (JSON.stringify(normalizedData).length / JSON.stringify(chats).length) *
+        100
+    )
     res.json(normalizedData)
   }
 
   async getId(req: Request, res: Response) {
     const id = req.params.id
-    const producto = await ChatsController.contenedor.getById(id)
-    if (producto) {
-      res.json(producto)
+    const message = await ChatsController.contenedor.getById(id)
+    if (message) {
+      res.json(message)
     } else {
-      res.status(404).json({ error: 'Producto no encontrado' })
+      res.status(404).json({ error: 'Mensaje no encontrado' })
     }
   }
 
@@ -100,16 +99,16 @@ class ChatsController {
     const file = req.file
 
     if (!actual) {
-      return res.status(404).json({ error: 'Producto no encontrado' })
+      return res.status(404).json({ error: 'Mensaje no encontrado' })
     }
 
-    const parsedProduct = { ...reqData }
+    const parsedChat = { ...reqData }
     if (file) {
-      parsedProduct.thumbnail = file.path.replace('public', '')
+      parsedChat.avatar = file.path.replace('public', '')
     }
-    await ChatsController.contenedor.update(id, parsedProduct)
+    await ChatsController.contenedor.update(id, parsedChat)
 
-    res.json({ ...parsedProduct, id })
+    res.json({ ...parsedChat, id })
   }
 
   async deleteId(req: Request, res: Response) {

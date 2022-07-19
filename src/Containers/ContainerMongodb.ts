@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose'
 
 import AbstractContainer from './AbstractContainer'
 import ContainerId from './types/ContainerId'
 
-export default class ContainerMongodb implements AbstractContainer {
+export class ContainerMongodb<Input> implements AbstractContainer<Input> {
   collection: string
   connectionURL: string
   db: mongoose.Connection
   modelName: string
-  schema: mongoose.Schema
-  Model: mongoose.Model<mongoose.Document>
+  schema: mongoose.Schema<Input>
+  Model: mongoose.Model<Input>
 
   constructor(
     collection: string,
@@ -20,35 +21,32 @@ export default class ContainerMongodb implements AbstractContainer {
     this.collection = collection
     this.connectionURL = connectionURI
     this.modelName = modelName
-    this.schema = new mongoose.Schema(schema)
+    this.schema = new mongoose.Schema<Input>(schema)
     this.db = mongoose.createConnection(connectionURI, { keepAlive: true })
-    this.Model = this.db.model(modelName, this.schema, collection)
+    this.Model = this.db.model<Input>(modelName, this.schema, collection)
   }
 
-  async save(Data: object): Promise<object> {
-    const res = await this.Model.create(Data)
-    const { __v, _id, ...rest } = await res.toObject()
-    return rest
+  async save(Data: Input | Input[]) {
+    return await this.Model.create(Data)
   }
 
-  async update(ID: ContainerId, Data: object): Promise<object | null> {
-    return await this.Model.findByIdAndUpdate(ID, Data).exec()
+  async update(ID: ContainerId, Data: Input) {
+    return await this.Model.findByIdAndUpdate(ID, Data).lean()
   }
 
-  async getById(ID: ContainerId): Promise<object | null> {
-    return await this.Model.findById(ID)
+  async getById(ID: ContainerId) {
+    return await this.Model.findById(ID).lean()
   }
 
-  async getAll(): Promise<object[]> {
-    const res = await this.Model.find({}, { _id: 0, __v: 0 })
-    return res.map((item) => item.toObject())
+  async getAll() {
+    return await this.Model.find().lean()
   }
 
-  async deleteById(ID: ContainerId): Promise<object | null> {
-    return await this.Model.findByIdAndDelete(ID).exec()
+  async deleteById(ID: ContainerId) {
+    return await this.Model.findByIdAndDelete(ID).lean()
   }
 
-  async deleteAll(): Promise<object> {
-    return await this.Model.deleteMany()
+  async deleteAll() {
+    return await this.Model.deleteMany().lean()
   }
 }

@@ -8,7 +8,7 @@ const postForm = document.getElementById('postProduct')
 const productsBody = document.querySelector('#products tbody')
 // template helpers
 function getRowTemplate(product) {
-  const template = `<td>${product.id}</td>
+  const template = `<td>${product._id}</td>
   <td>${product.title}</td>
   <td>${product.price}</td>`
 
@@ -27,17 +27,17 @@ function getRowTemplate(product) {
 function getChatBoxTemplate(data) {
   return `<blockquote class="flex flex-col bg-base-200 p-1 rounded">
     <div class="flex gap-2">
-      <span class="text-blue-300">${data.author.id || data.author.email}</span>
+      <span class="text-blue-300">${data.author.email}</span>
     </div>
-    <p class="text-green-500 indent-8">${data.text || data.message}</p>
+    <p class="text-green-500 indent-8">${data.text}</p>
   </blockquote>`
 }
 // Normalizr Schemas/Entities
-const author = new schema.Entity('authors')
+const author = new schema.Entity('authors', {}, { idAttribute: 'email' })
 const message = new schema.Entity(
   'messages',
   { author },
-  { idAttribute: (entity) => entity.author.id }
+  { idAttribute: '_id' }
 )
 
 const chatSchema = new schema.Entity('chat', {
@@ -50,9 +50,14 @@ const socket = io() // eslint-disable-line
 // ========= Chat =========
 // save message function
 async function getMessages() {
-  const response = await fetch('api/chats')
+  const response = await fetch('/api/chats')
+  console.log(
+    'porcentaje : ' + Math.round(+response.headers.get('x-percentage'))
+  )
   const data = await response.json()
-  return denormalize(data.result, chatSchema, data.entities)
+  const denormalized = denormalize(data.result, chatSchema, data.entities)
+  console.log(data)
+  return denormalized
 }
 
 function renderMessage(data) {
@@ -70,14 +75,15 @@ async function saveMessage(user) {
     },
     body: JSON.stringify(user),
   }
-  await fetch('api/chats', options)
+  await fetch('/api/chats', options)
 }
 
 chatForm.addEventListener('submit', async (e) => {
   e.preventDefault()
+
   const user = {
     author: {
-      id: chatFormInputs[0].value,
+      email: chatFormInputs[0].value,
       nombre: chatFormInputs[1].value,
       apellido: chatFormInputs[2].value,
       alias: chatFormInputs[3].value,
@@ -96,9 +102,12 @@ socket.on('chat:message', async (data) => {
 })
 
 // ========= Product =========
-
+async function getProducts() {
+  const res = await fetch('/api/products')
+  return res.json()
+}
 async function getRandomProducts() {
-  const res = await fetch('api/products/productos-test')
+  const res = await fetch('/api/productos-test')
   return res.json()
 }
 
@@ -107,7 +116,7 @@ async function saveProduct(formElement) {
     method: 'POST',
     body: new FormData(formElement),
   }
-  const res = await fetch('api/products', options)
+  const res = await fetch('/api/products', options)
   return res.json()
 }
 
@@ -133,6 +142,8 @@ socket.on('product:post', async (data) => {
 window.addEventListener('load', async () => {
   const { messages } = await getMessages()
   const RandomProducts = await getRandomProducts()
+  const RealProducts = await getProducts()
   messages.forEach(renderMessage)
   RandomProducts.forEach(renderProduct)
+  RealProducts.forEach(renderProduct)
 })

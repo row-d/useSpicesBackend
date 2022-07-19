@@ -1,8 +1,19 @@
 import { Schema } from 'mongoose'
 
-import ContainerMongodb from '../../ContainerMongodb'
+import { ContainerMongodb } from '../../ContainerMongodb'
 
-export default class ChatContainerMongodb extends ContainerMongodb {
+type Message = {
+  author: {
+    email: string
+    nombre: string
+    apelido: string
+    alias: string
+    avatar: string
+  }
+  text: string
+}
+
+export default class ChatContainerMongodb extends ContainerMongodb<Message> {
   constructor() {
     const authorSchema = new Schema(
       {

@@ -3,12 +3,11 @@ import fs from 'fs/promises'
 import multer from 'multer'
 import path from 'path'
 
-import AbstractContainer from '../Containers/AbstractContainer'
 import ProductContainerMongodb from '../Containers/DAOs/products/ProductContainerMongodb'
 
 class ProductsController {
   staticFolder: string
-  contenedor: AbstractContainer
+  static contenedor: ProductContainerMongodb
   storage: multer.StorageEngine
   upload: multer.Multer
 
@@ -17,7 +16,7 @@ class ProductsController {
 
     fs.mkdir(this.staticFolder, { recursive: true })
 
-    this.contenedor = new ProductContainerMongodb()
+    ProductsController.contenedor = new ProductContainerMongodb()
 
     this.storage = multer.diskStorage({
       destination: (req, file, cb) => {
@@ -35,12 +34,12 @@ class ProductsController {
   }
 
   async getData(req: Request, res: Response) {
-    res.json(await this.contenedor.getAll())
+    res.json(await ProductsController.contenedor.getAll())
   }
 
   async getId(req: Request, res: Response) {
     const id = req.params.id
-    const producto = await this.contenedor.getById(id)
+    const producto = await ProductsController.contenedor.getById(id)
     if (producto) {
       res.json(producto)
     } else {
@@ -56,18 +55,18 @@ class ProductsController {
       if (file) {
         parsedProduct.thumbnail = file.path.replace(/(.*?)public/, '')
       }
-      const id = await this.contenedor.save(parsedProduct)
+      const id = await ProductsController.contenedor.save(parsedProduct)
       if (redirect === true) {
         return res.redirect(302, '/')
       }
-      return res.json({ ...parsedProduct, id })
+      return res.json(id)
     }
   }
 
   async putId(req: Request, res: Response) {
     const id = req.params.id
     const reqData = { ...req.body }
-    const actual = await this.contenedor.getById(id)
+    const actual = await ProductsController.contenedor.getById(id)
     const file = req.file
 
     if (!actual) {
@@ -78,15 +77,14 @@ class ProductsController {
     if (file) {
       parsedProduct.thumbnail = file.path.replace('public', '')
     }
-    await this.contenedor.update(id, parsedProduct)
+    await ProductsController.contenedor.update(id, parsedProduct)
 
-    res.json({ ...parsedProduct, id })
+    res.json(id)
   }
 
   async deleteId(req: Request, res: Response) {
     const id = req.params.id
-    const deletedId = await this.contenedor.deleteById(id)
-    console.log(deletedId)
+    const deletedId = await ProductsController.contenedor.deleteById(id)
     res.json({ status: 200, message: deletedId })
   }
 }

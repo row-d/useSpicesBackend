@@ -20,8 +20,16 @@ export default class ChatAPI {
 
     this.route.get('/', this.controller.getData)
     this.route.get('/:id', this.controller.getId)
-    this.route.post('/', this.controller.postData())
-    this.route.put('/:id', this.controller.putId)
+    this.route.post(
+      '/',
+      this.controller.upload.single('avatar'),
+      this.controller.postData()
+    )
+    this.route.put(
+      '/:id',
+      this.controller.upload.single('avatar'),
+      this.controller.putId
+    )
     this.route.delete('/:id?', this.controller.deleteId)
   }
 }
