@@ -14,7 +14,6 @@ route.use(express.urlencoded({ extended: true }))
 
 route.get('/', controller.getData)
 route.get('/:id', controller.getId)
-route.get('/productos-test', controller.getRandom)
 route.post('/', controller.upload.single('thumbnail'), controller.postData())
 route.put('/:id', controller.upload.single('thumbnail'), controller.putId)
 route.delete('/:id', controller.deleteId)

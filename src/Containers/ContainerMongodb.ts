@@ -21,16 +21,18 @@ export default class ContainerMongodb implements AbstractContainer {
     this.connectionURL = connectionURI
     this.modelName = modelName
     this.schema = new mongoose.Schema(schema)
-    this.db = mongoose.createConnection(connectionURI)
+    this.db = mongoose.createConnection(connectionURI, { keepAlive: true })
     this.Model = this.db.model(modelName, this.schema, collection)
   }
 
   async save(Data: object): Promise<object> {
-    return await this.Model.create(Data)
+    const res = await this.Model.create(Data)
+    const { __v, _id, ...rest } = await res.toObject()
+    return rest
   }
 
   async update(ID: ContainerId, Data: object): Promise<object | null> {
-    return await this.Model.findByIdAndUpdate(ID, Data)
+    return await this.Model.findByIdAndUpdate(ID, Data).exec()
   }
 
   async getById(ID: ContainerId): Promise<object | null> {
@@ -38,11 +40,12 @@ export default class ContainerMongodb implements AbstractContainer {
   }
 
   async getAll(): Promise<object[]> {
-    return await this.Model.find()
+    const res = await this.Model.find({}, { _id: 0, __v: 0 })
+    return res.map((item) => item.toObject())
   }
 
   async deleteById(ID: ContainerId): Promise<object | null> {
-    return await this.Model.findByIdAndDelete(ID)
+    return await this.Model.findByIdAndDelete(ID).exec()
   }
 
   async deleteAll(): Promise<object> {

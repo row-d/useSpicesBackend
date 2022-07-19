@@ -4,14 +4,19 @@ import ContainerMongodb from '../../ContainerMongodb'
 
 export default class ChatContainerMongodb extends ContainerMongodb {
   constructor() {
-    super('Products', process.env.MONGODB_URI as string, 'Product', {
-      author: new Schema({
-        id: String,
+    const authorSchema = new Schema(
+      {
+        email: String,
         nombre: String,
         apellido: String,
         alias: String,
         avatar: String,
-      }),
+      },
+      { _id: false, versionKey: false }
+    )
+
+    super('Chats', process.env.MONGODB_URI as string, 'Chat', {
+      author: authorSchema,
       text: String,
     })
   }

@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker'
 import { Request, Response } from 'express'
 import fs from 'fs/promises'
 import multer from 'multer'
@@ -33,16 +32,6 @@ class ProductsController {
     })
 
     this.upload = multer({ storage: this.storage })
-  }
-
-  async getRandom(req: Request, res: Response) {
-    res.json(
-      Array.from({ length: 5 }, () => ({
-        title: faker.commerce.product(),
-        price: faker.commerce.price(),
-        thumbnail: faker.image.imageUrl(),
-      }))
-    )
   }
 
   async getData(req: Request, res: Response) {

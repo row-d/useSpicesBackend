@@ -1,5 +1,6 @@
 import 'dotenv/config'
 
+import { faker } from '@faker-js/faker'
 import express from 'express'
 import http from 'http'
 import morgan from 'morgan'
@@ -24,8 +25,18 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(morgan('tiny'))
 
 // Routes
-app.use('/api/chats', chat)
-app.use('/api/products', products)
+app.use('/api/chats', new chat().route)
+// app.use('/api/products', products)
+
+app.get('/api/productos-test', (req, res) => {
+  res.json(
+    Array.from({ length: 5 }, () => ({
+      title: faker.commerce.product(),
+      price: faker.commerce.price(),
+      thumbnail: faker.image.imageUrl(),
+    }))
+  )
+})
 
 app.get('/', (req, res) => {
   res.render('layouts/index', {
@@ -49,7 +60,7 @@ const mode = process.env.NODE_ENV || 'development'
 
 server.listen(port, () => {
   console.log(
-    '\x1b[36mApp is running at http://localhost:%d in \x1b[33m%s \x1b[36mmode \x1b[0m',
+    'App is running at \x1b[36mhttp://localhost:%d\x1b[0m in \x1b[33m%s \x1b[36m\x1b[0mmode',
     port,
     mode
   )

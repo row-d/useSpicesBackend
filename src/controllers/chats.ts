@@ -9,7 +9,7 @@ import ChatContainerMongodb from '../Containers/DAOs/chats/ChatContainerMongodb'
 
 class ChatsController {
   staticFolder: string
-  contenedor: AbstractContainer
+  static contenedor: AbstractContainer
   storage: multer.StorageEngine
   upload: multer.Multer
 
@@ -18,7 +18,7 @@ class ChatsController {
 
     fs.mkdir(this.staticFolder, { recursive: true })
 
-    this.contenedor = new ChatContainerMongodb()
+    ChatsController.contenedor = new ChatContainerMongodb()
 
     this.storage = multer.diskStorage({
       destination: (req, file, cb) => {
@@ -36,29 +36,40 @@ class ChatsController {
   }
 
   async getData(req: Request, res: Response) {
-    const author = new schema.Entity('authors')
-
-    const message = new schema.Entity(
-      'messages',
-      { author },
-      { idAttribute: (entity) => entity.author.id }
+    const authorEntity = new schema.Entity(
+      'authors',
+      {},
+      { idAttribute: 'email' }
     )
 
-    const chatSchema = new schema.Entity('chat', {
-      messages: [message],
+    const messageEntity = new schema.Entity(
+      'messages',
+      { authorEntity: authorEntity },
+      { idAttribute: (entity) => entity.author.email }
+    )
+
+    const chatEntity = new schema.Entity('chat', {
+      messages: [messageEntity],
     })
 
+    const chats = await ChatsController.contenedor.getAll()
+
     const normalizedData = normalize(
-      { id: 'messages', messages: await this.contenedor.getAll() },
-      chatSchema
+      { id: 'messages', messages: chats },
+      chatEntity
     )
+
+    // console.log(
+    //   (JSON.stringify(normalizedData).length / JSON.stringify(chats).length) *
+    //     100
+    // )
 
     res.json(normalizedData)
   }
 
   async getId(req: Request, res: Response) {
     const id = req.params.id
-    const producto = await this.contenedor.getById(id)
+    const producto = await ChatsController.contenedor.getById(id)
     if (producto) {
       res.json(producto)
     } else {
@@ -68,24 +79,24 @@ class ChatsController {
 
   postData(redirect = false) {
     return async (req: Request, res: Response) => {
-      const producto = req.body
+      const data = req.body
       const file = req.file
-      const parsedProduct = { ...producto }
-      if (file) {
-        parsedProduct.thumbnail = file.path.replace(/(.*?)public/, '')
+      const parsedData = { ...data }
+      if (file && !data.avatar) {
+        parsedData.avatar = file.path.replace(/(.*?)public/, '')
       }
-      const id = await this.contenedor.save(parsedProduct)
+      const id = await ChatsController.contenedor.save(parsedData)
       if (redirect === true) {
         return res.redirect(302, '/')
       }
-      return res.json({ ...parsedProduct, id })
+      return res.json(id)
     }
   }
 
   async putId(req: Request, res: Response) {
     const id = req.params.id
     const reqData = { ...req.body }
-    const actual = await this.contenedor.getById(id)
+    const actual = await ChatsController.contenedor.getById(id)
     const file = req.file
 
     if (!actual) {
@@ -96,16 +107,18 @@ class ChatsController {
     if (file) {
       parsedProduct.thumbnail = file.path.replace('public', '')
     }
-    await this.contenedor.update(id, parsedProduct)
+    await ChatsController.contenedor.update(id, parsedProduct)
 
     res.json({ ...parsedProduct, id })
   }
 
   async deleteId(req: Request, res: Response) {
     const id = req.params.id
-    const deletedId = await this.contenedor.deleteById(id)
-    console.log(deletedId)
-    res.json({ status: 200, message: deletedId })
+    res.send(
+      id
+        ? await ChatsController.contenedor.deleteById(id)
+        : await ChatsController.contenedor.deleteAll()
+    )
   }
 }
 
