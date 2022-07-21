@@ -1,0 +1,7 @@
+extends ../templates/_layout.pug
+
+block content
+  form(action="/login" method="post").container.mx-auto
+    label(for="user") User
+    input.input.input-bordered(type='text' name="user" placeholder='username' autocomplete="id" id="user" required)
+  script(src="/login.js") 
