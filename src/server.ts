@@ -37,7 +37,7 @@ app.use(
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       mongoOptions: advancedOptions as MongoClientOptions,
-      ttl: 60,
+      ttl: 600,
     }),
     secret: 'asd123',
     resave: true,

@@ -1,7 +1,10 @@
 extends ../templates/_layout.pug
 
 block content
-  form(action="/login" method="post").container.mx-auto
-    label(for="user") User
-    input.input.input-bordered(type='text' name="user" placeholder='username' autocomplete="id" id="user" required)
+  .flex.items-center.justify-center.h-screen.bg-base-200
+    form(action="/login" method="post" class="card card-compact")
+      .card-body 
+        label(for="user" class="card-title") Login
+        input(type='text' name="user" placeholder='username' autocomplete="id" id="user" required class="input input-bordered justify-end")
+        input(type="submit", value="Login" class="btn")
   script(src="/login.js") 
