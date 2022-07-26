@@ -9,14 +9,17 @@ type AuthUser = {
 }
 
 export const loginStrategy = (User: mongoose.Model<AuthUser>) =>
-  new LocalStrategy(async (username, password, done) => {
-    const user = await User.findOne({ username }).lean()
-    if (!user) {
-      return done(null, false, { message: 'User not found' })
-    }
+  new LocalStrategy(
+    { usernameField: 'email' },
+    async (email, password, done) => {
+      const user = await User.findOne({ email: email }).lean()
+      if (!user) {
+        return done(null, false, { message: 'User not found' })
+      }
 
-    if (!compareHash(password, user.password)) {
-      return done(null, false, { message: 'Incorrect password' })
+      if (!compareHash(password, user.password)) {
+        return done(null, false, { message: 'Incorrect password' })
+      }
+      return done(null, user)
     }
-    return done(null, user)
-  })
+  )

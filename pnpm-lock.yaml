@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@faker-js/faker': ^7.3.0
   '@types/bcrypt': ^5.0.0
+  '@types/connect-flash': ^0.0.37
   '@types/express': ^4.17.13
   '@types/express-session': ^1.17.5
   '@types/jest': ^28.1.1
@@ -15,6 +16,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.28.0
   '@typescript-eslint/parser': ^5.28.0
   bcrypt: ^5.0.1
+  connect-flash: ^0.1.1
   connect-mongo: ^4.6.0
   daisyui: ^2.19.1
   dotenv: ^16.0.1
@@ -46,6 +48,7 @@ specifiers:
 dependencies:
   '@types/express-session': 1.17.5
   bcrypt: 5.0.1
+  connect-flash: 0.1.1
   connect-mongo: 4.6.0_mongodb@4.8.0
   daisyui: 2.19.1
   dotenv: 16.0.1
@@ -63,6 +66,7 @@ dependencies:
 devDependencies:
   '@faker-js/faker': 7.3.0
   '@types/bcrypt': 5.0.0
+  '@types/connect-flash': 0.0.37
   '@types/express': 4.17.13
   '@types/jest': 28.1.1
   '@types/morgan': 1.9.3
@@ -841,6 +845,12 @@ packages:
   /@types/component-emitter/1.2.11:
     resolution: {integrity: sha512-SRXjM+tfsSlA9VuG8hGO2nft2p8zjXCK1VcC6N4NXbBbYbSia9kzCChYQajIjzIqOOOuh5Ock6MmV2oux4jDZQ==}
     dev: false
+
+  /@types/connect-flash/0.0.37:
+    resolution: {integrity: sha512-SfmGGYpKvPfZeA+v74FS0HlYqVsx8Inb4d3px99kz2xSMx/IQiz/K/i+7MHTmk/OkE+0suZX108tHrQJ8QEGag==}
+    dependencies:
+      '@types/express': 4.17.13
+    dev: true
 
   /@types/connect/3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
@@ -1699,6 +1709,11 @@ packages:
       inherits: 2.0.4
       readable-stream: 2.3.7
       typedarray: 0.0.6
+    dev: false
+
+  /connect-flash/0.1.1:
+    resolution: {integrity: sha512-2rcfELQt/ZMP+SM/pG8PyhJRaLKp+6Hk2IUBNkEit09X+vwn3QsAL3ZbYtxUn7NVPzbMTSLRDhqe0B/eh30RYA==}
+    engines: {node: '>= 0.4.0'}
     dev: false
 
   /connect-mongo/4.6.0_mongodb@4.8.0:

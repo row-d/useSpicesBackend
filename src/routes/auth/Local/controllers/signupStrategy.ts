@@ -1,28 +1,26 @@
+import mongoose from 'mongoose'
 import { Strategy as LocalStrategy } from 'passport-local'
-import db from '../../../db/connection.js'
-import { createHash } from './helpers/create-hash.js'
 
-const User = db.model('User')
+import { createHash } from './helpers/hashing'
 
-export const signupOptions = {
-  passReqToCallback: true,
-  successRedirect: '/',
-  failureRedirect: '/login',
-  failureFlash: true,
+type AuthUser = {
+  email: string
+  password: string
 }
 
-const signupVerify = async (req, username, password, done) => {
-  const user = await User.findOne({ username, password })
-  if (user) {
-    return done(null, false, { message: 'User already exists' })
-  }
-  const newUser = new User({
-    username,
-    password: createHash(password),
-    email: req.body.email,
-  })
+export const signupStrategy = (userModel: mongoose.Model<AuthUser>) =>
+  new LocalStrategy(
+    { usernameField: 'email' },
+    async (email, password, done) => {
+      const user = await userModel.findOne({ email: email, password }).lean()
+      if (user) {
+        return done(null, false, { message: 'User already exists' })
+      }
+      const newUser = await userModel.create({
+        email,
+        password: createHash(password),
+      })
 
-  return done(null, newUser)
-}
-
-export const signupStrategy = new LocalStrategy(signupVerify)
+      return done(null, newUser)
+    }
+  )

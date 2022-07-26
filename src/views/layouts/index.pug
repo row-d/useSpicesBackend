@@ -1,5 +1,10 @@
 extends ../templates/_layout.pug
 
+block scripts 
+  script(src="/socket.io/socket.io.js")
+  script(src="/normalizr.browser.min.js")
+  script(src="/script.js")
+
 block content 
   header(class="navbar bg-base-100")
     div(class="flex-1")
@@ -7,7 +12,7 @@ block content
         span(class="font-bold") #{user}
     div(class="flex-none")
       a(class="btn" href="/logout") Logout
-      
+
   .grid.gap-2.px-2.min-h-full(class="lg:grid-cols-6")
     .space-y-4.order-2(class="lg:col-span-2 lg:order-1")
       h2 Chat
