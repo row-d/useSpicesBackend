@@ -6,7 +6,6 @@ import express from 'express'
 import session from 'express-session'
 import http from 'http'
 import { MongoClientOptions } from 'mongodb'
-import morgan from 'morgan'
 import path from 'path'
 import { Server } from 'socket.io'
 
@@ -28,7 +27,13 @@ app.set('views', path.join(__dirname, 'views'))
 
 // Middlewares
 
-process.env.NODE_ENV === 'development' && app.use(morgan('tiny')) // dev
+if (process.env.NODE_ENV === 'development') {
+  ;(async () => {
+    const morganMod = await import('morgan')
+    const morgan = morganMod.default
+    app.use(morgan('tiny')) // dev
+  })()
+}
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
