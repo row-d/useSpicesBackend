@@ -1,14 +1,13 @@
 import 'dotenv/config'
 
 import { faker } from '@faker-js/faker'
-import { fork } from 'child_process'
 import express from 'express'
 import http from 'http'
 import path from 'path'
 import { Server } from 'socket.io'
 import yargs from 'yargs/yargs'
 
-import { auth, chat, products } from './routes'
+import { auth, chat, products, randoms } from './routes'
 
 // Server constants & config
 declare global {
@@ -67,26 +66,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', new auth().route)
 app.use('/api/chats', new chat().route)
 app.use('/api/products', new products().route)
-
-app.get('/api/randoms', (req, res) => {
-  const scriptPath = path.resolve(__dirname, 'functions/randoms')
-  const child = fork(scriptPath)
-  const range = req.query.cant
-  range ? child.send(Number(range)) : child.send(1e8)
-
-  child.on('exit', (code) => {
-    if (code !== 0) {
-      const err: Error & { statusCode?: number } = new Error(
-        'Error in child process'
-      )
-      err.statusCode = 500
-    }
-  })
-
-  child.on('message', (msg) => {
-    res.send(msg)
-  })
-})
+app.use('/api/randoms', randoms)
 
 app.get('/api/productos-test', (req, res) => {
   res.json(
