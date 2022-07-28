@@ -1,10 +1,12 @@
 import 'dotenv/config'
 
 import { faker } from '@faker-js/faker'
+import { fork } from 'child_process'
 import express from 'express'
 import http from 'http'
 import path from 'path'
 import { Server } from 'socket.io'
+import yargs from 'yargs/yargs'
 
 import { auth, chat, products } from './routes'
 
@@ -27,6 +29,18 @@ declare module 'express-session' {
     _id?: string
   }
 }
+
+const args = yargs(process.argv.slice(2))
+  .options({
+    port: {
+      alias: 'p',
+      default: Number(process.env.PORT) || 8080,
+      describe: 'Port to run the server on',
+      type: 'number',
+    },
+  })
+  .parseSync()
+
 const app = express()
 const server = http.createServer(app)
 const io = new Server(server)
@@ -49,9 +63,30 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
 
 // Routes
+
 app.use('/', new auth().route)
 app.use('/api/chats', new chat().route)
 app.use('/api/products', new products().route)
+
+app.get('/api/randoms', (req, res) => {
+  const scriptPath = path.resolve(__dirname, 'functions/randoms')
+  const child = fork(scriptPath)
+  const range = req.query.cant
+  range ? child.send(Number(range)) : child.send(1e8)
+
+  child.on('exit', (code) => {
+    if (code !== 0) {
+      const err: Error & { statusCode?: number } = new Error(
+        'Error in child process'
+      )
+      err.statusCode = 500
+    }
+  })
+
+  child.on('message', (msg) => {
+    res.send(msg)
+  })
+})
 
 app.get('/api/productos-test', (req, res) => {
   res.json(
@@ -62,6 +97,18 @@ app.get('/api/productos-test', (req, res) => {
       thumbnail: faker.image.imageUrl(480, 480, undefined, true),
     }))
   )
+})
+
+app.get('/info', (req, res) => {
+  res.json({
+    args,
+    execPath: process.execPath,
+    pid: process.pid,
+    dirname: process.cwd(),
+    version: process.version,
+    platform: process.platform,
+    rss: process.memoryUsage.rss(),
+  })
 })
 
 // Socket.io
@@ -75,7 +122,7 @@ io.on('connection', (socket) => {
   })
 })
 
-const port = process.env.PORT || 8080
+const port = args.port
 const mode = process.env.NODE_ENV || 'development'
 
 server.listen(port, () => {
