@@ -106,3 +106,5 @@ dist
 *.txt
 *.json
 !package*.json
+!tsconfig.json
+.vscode/
