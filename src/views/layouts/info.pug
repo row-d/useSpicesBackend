@@ -1,0 +1,47 @@
+extends ../templates/_layout.pug
+
+block content
+  .mx-auto.container.flex.justify-center
+    .stats.stats-vertical.shadow.bg-base-200
+      .stat 
+        .stat-title Platform 
+        .stat-value.max-w-prose.capitalize #{platform}
+        .stat-desc Operating System
+      .stat 
+        .stat-title Node.js Version 
+        .stat-value.max-w-prose #{version}
+      .stat 
+        .stat-title CPU's
+        .stat-value.max-w-prose #{cpus} Cores
+        .stat-desc Number of CPU's
+      .stat 
+        .stat-title RSS
+        .stat-value.max-w-prose #{(rss * 1e-6).toFixed(2)} MB
+        .stat-desc Memory Usage in Bytes
+      .stat 
+        .stat-title PID
+        .stat-value.max-w-prose #{pid}
+        .stat-desc Process ID
+      .stat 
+        .stat-title Dirname
+        .stat-value.max-w-prose #{dirname}
+        .stat-desc Current Working Directory
+      .stat 
+        .stat-title Exec Path
+        .stat-value.max-w-prose #{execPath}
+        .stat-desc Executable Path
+      .stat
+        .stat-title CLI Args 
+        each v,k in args
+          .stat
+            if(k == '_' )
+              .stat-title Extra Arguments
+              if(v.length > 0)
+                .stat-value.max-w-prose
+                  each value in v 
+                    #{value}
+              else
+                .stat-value.max-w-prose Empty
+            else 
+              .stat-title #{k}
+              .stat-value.max-w-prose #{v}
