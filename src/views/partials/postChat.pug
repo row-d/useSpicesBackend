@@ -1,0 +1,18 @@
+form#chatForm.space-y-2
+  label.input-group
+    span Email
+    input.input.input-bordered(type='email' name="email" placeholder='Email address' autocomplete="id" required)
+  label.input-group
+    span Nombre
+    input.input.input-bordered(type='text' name="nombre" placeholder='First Name' required)
+  label.input-group
+    span Apellido
+    input.input.input-bordered(type='text' name="apellido" placeholder='Last Name' required)
+  label.input-group
+    span Alias
+    input.input.input-bordered(type='text' name="alias" placeholder='Alias' required)
+  label.input-group
+    span Avatar
+    input.input.input-bordered(type='file' name="avatar" class="file:bg-neutral file:text-neutral-content file:font-bold file:border-none file:p-2 file:hover:bg-neutral-focus file:hover:cursor-pointer file:rounded-btn" required)
+  input.input.input-bordered.w-full(type='text' name="text" placeholder='Type something...')
+  input.btn(type="submit")

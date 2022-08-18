@@ -1,0 +1,26 @@
+extends ../templates/_layout.pug
+
+block scripts 
+  script(src="/socket.io/socket.io.js")
+  script(src="/normalizr.browser.min.js")
+  script(src="/script.js")
+
+block content 
+  header(class="navbar bg-base-100")
+    div(class="flex-1")
+      h1(class="normal-case text-xl") Welcome 
+        span(class="font-bold") #{user}
+    div(class="flex-none")
+      a(class="btn" href="/logout") Logout
+
+  .grid.gap-2.px-2.min-h-full(class="lg:grid-cols-6")
+    .space-y-4.order-2(class="lg:col-span-2 lg:order-1")
+      h2 Chat
+      #chatMessages.bg-base-300.h-full.max-h-screen.rounded.p-2.mx-4.space-y-2.overflow-y-auto
+        //- each user in messages
+        //-   include ../templates/chatBox.pug
+      include ../partials/postChat.pug
+    .space-y-4(class="lg:col-span-4 lg:order-2")
+      h2 Productos
+      include ../partials/postProduct.pug
+      include ../partials/table.pug

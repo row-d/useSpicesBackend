@@ -1,0 +1,19 @@
+extends ../templates/_layout.pug
+
+block content
+  .flex.flex-col.gap-4.items-center.justify-center.h-screen.bg-base-200
+    form(action="/auth/login" method="POST" class="card card-compact shadow-xl")
+      .card-body 
+        label(for="email" class="card-title") Email
+        input(type='email' name="email" placeholder="email@email.example" autocomplete="id" id="email" required class="input input-bordered justify-end")
+        label(for="password" class="card-title") Password
+        input(type='password' name="password" placeholder='********' autocomplete="id" id="password" required class="input input-bordered justify-end")
+        input(type="submit" value="Login" class="btn btn-success")
+        a(href="/signup" class="btn") Sign up
+    .card.card-compact.bg-error.text-error-content.p-4.font-bold(class= (messages != "") ? 'block' : 'invisible')
+      if messages 
+        each msg in messages
+          | #{msg}
+
+
+

@@ -103,5 +103,10 @@ dist
 # TernJS port file
 .tern-port
 
-# project-specific files
-.vscode
+!src/desafios/productos.txt
+*.txt
+*.json
+!package*.json
+!tsconfig.json
+.vscode/
+>>>>>>> session
