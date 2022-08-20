@@ -39,10 +39,10 @@ class ProductsController {
 
   async getId(req: Request, res: Response) {
     const id = req.params.id
-    const producto = await ProductsController.contenedor.getById(id)
-    if (producto) {
+    try {
+      const producto = await ProductsController.contenedor.getById(id)
       res.json(producto)
-    } else {
+    } catch (error) {
       res.status(404).json({ error: 'Producto no encontrado' })
     }
   }

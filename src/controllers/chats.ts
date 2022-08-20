@@ -68,10 +68,10 @@ class ChatsController {
 
   async getId(req: Request, res: Response) {
     const id = req.params.id
-    const message = await ChatsController.contenedor.getById(id)
-    if (message) {
+    try {
+      const message = await ChatsController.contenedor.getById(id)
       res.json(message)
-    } else {
+    } catch (error) {
       res.status(404).json({ error: 'Mensaje no encontrado' })
     }
   }

@@ -23,12 +23,14 @@ function randoms(range = 1e8) {
   return numbers
 }
 
-process.on('message', (msg: number) => {
-  if (!msg) {
-    return process.exit(1)
-  }
-  if (process.send) {
-    process.send(randoms(msg))
-    process.exit()
-  }
-})
+// process.on('message', (msg: number) => {
+//   if (!msg) {
+//     return process.exit(1)
+//   }
+//   if (process.send) {
+//     process.send(randoms(msg))
+//     process.exit()
+//   }
+// })
+
+export default randoms

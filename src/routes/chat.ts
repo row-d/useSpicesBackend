@@ -2,6 +2,7 @@ import express from 'express'
 import path from 'path'
 
 import ChatsController from '../controllers/chats'
+import logger from '../logger'
 
 export default class ChatAPI {
   route: express.Router
@@ -9,7 +10,16 @@ export default class ChatAPI {
   constructor() {
     this.controller = new ChatsController()
     this.route = express.Router()
-
+    this.route.use((req, res, next) => {
+      res.on('finish', () => {
+        if (res.statusCode !== 200) {
+          logger.error(
+            `${req.method} ${req.url} - ${res.statusCode} ${res.statusMessage}`
+          )
+        }
+      })
+      next()
+    })
     this.route.use(
       express.static(
         path.join(__dirname, this.controller.staticFolder.split('/')[0])

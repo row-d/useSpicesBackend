@@ -2,6 +2,11 @@ import express from 'express'
 import path from 'path'
 
 import ProductsController from '../controllers/products'
+import logger from '../logger'
+
+process.on('uncaughtException', (err) => {
+  logger.error(err)
+})
 
 export default class ProductRoute {
   route: express.Router
@@ -9,6 +14,17 @@ export default class ProductRoute {
   constructor() {
     this.controller = new ProductsController()
     this.route = express.Router()
+    this.route.use((req, res, next) => {
+      res.on('finish', () => {
+        if (res.statusCode !== 200) {
+          logger.error(
+            `${req.method} ${req.url} - ${res.statusCode} ${res.statusMessage}`
+          )
+        }
+      })
+      next()
+    })
+
     this.route.use(
       express.static(
         path.join(__dirname, this.controller.staticFolder.split('/')[0])
