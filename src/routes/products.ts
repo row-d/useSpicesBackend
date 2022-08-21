@@ -4,10 +4,6 @@ import path from 'path'
 import ProductsController from '../controllers/products'
 import logger from '../logger'
 
-process.on('uncaughtException', (err) => {
-  logger.error(err)
-})
-
 export default class ProductRoute {
   route: express.Router
   controller: ProductsController
@@ -16,9 +12,9 @@ export default class ProductRoute {
     this.route = express.Router()
     this.route.use((req, res, next) => {
       res.on('finish', () => {
-        if (res.statusCode !== 200) {
+        if (res.statusCode >= 400) {
           logger.error(
-            `${req.method} ${req.url} - ${res.statusCode} ${res.statusMessage}`
+            `Product route : ${req.method} ${req.url} - ${res.statusCode} ${res.statusMessage}`
           )
         }
       })

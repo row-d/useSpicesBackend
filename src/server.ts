@@ -82,7 +82,7 @@ app.get('/info', (req, res) => {
 
 app.use((req, res) => {
   const message = `${req.method} ${req.path} does not exist`
-  logger.error(message)
+  logger.warn(message)
   res.status(404).send(message)
 })
 // Socket.io
