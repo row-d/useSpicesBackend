@@ -14,8 +14,7 @@
     "build:css": "tailwindcss -o ./dist/public/styles.css",
     "dev:css": "tailwindcss -o ./src/public/styles.css --watch",
     "lint": "eslint --ignore-path .gitignore . --ext .ts",
-    "lint:fix": "npm run lint -- --fix",
-    "migrate": "ts-node-dev ./migrations/up.ts"
+    "lint:fix": "npm run lint -- --fix"
   },
   "repository": {
     "type": "git",
