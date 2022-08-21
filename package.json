@@ -8,7 +8,7 @@
     "npm": "8.x"
   },
   "scripts": {
-    "start": "pm2 start ./dist/app.js",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "dev": "ts-node-dev ./src/app.ts",
     "build": "tsc",
     "postbuild": "cp -r ./src/public ./dist/public && cp -r ./src/views ./dist/views",
@@ -30,7 +30,7 @@
   "homepage": "https://github.com/Vyper-v/useSpicesBackend#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
-    "chalk": "^5.0.1",
+    "chalk": "^4.1.2",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^4.6.0",
@@ -52,7 +52,6 @@
     "yargs": "^17.5.1"
   },
   "devDependencies": {
-    "0x": "^5.4.1",
     "@faker-js/faker": "^7.4.0",
     "@types/bcrypt": "^5.0.0",
     "@types/compression": "^1.7.2",
@@ -69,6 +68,7 @@
     "@types/yargs": "^17.0.11",
     "@typescript-eslint/eslint-plugin": "^5.33.1",
     "@typescript-eslint/parser": "^5.33.1",
+    "0x": "^5.4.1",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
