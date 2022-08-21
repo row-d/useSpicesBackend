@@ -8,7 +8,7 @@
     "npm": "8.x"
   },
   "scripts": {
-    "start": "pm2 start ecosystem.config.js --env production",
+    "start": "node dist/app.js",
     "dev": "ts-node-dev ./src/app.ts",
     "build": "tsc",
     "postbuild": "cp -r ./src/public ./dist/public && cp -r ./src/views ./dist/views",
