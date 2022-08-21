@@ -8,9 +8,10 @@
     "npm": "8.x"
   },
   "scripts": {
-    "start": "pm2 ./dist/app.js",
+    "start": "pm2 start ./dist/app.js",
     "dev": "ts-node-dev ./src/app.ts",
     "build": "tsc",
+    "postbuild": "cp -r ./src/public ./dist/public && cp -r ./src/views ./dist/views",
     "build:css": "tailwindcss -o ./dist/public/styles.css",
     "dev:css": "tailwindcss -o ./src/public/styles.css --watch",
     "lint": "eslint --ignore-path .gitignore . --ext .ts",
