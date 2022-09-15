@@ -1,8 +1,5 @@
+import { Express, Request } from 'express'
 import mongoose from 'mongoose'
-
-import ContainerId from '../../../../Containers/types/ContainerId'
-
-type AnyObject = { [key: string]: any } // eslint-disable-line @typescript-eslint/no-explicit-any
 
 type AuthUser = {
   email: string
@@ -20,12 +17,14 @@ export const serialize = (
 export const deserialize =
   (UserModel: mongoose.Model<AuthUser>) =>
   async (
-    id: ContainerId,
-    done: (err: null, user?: Express.User | boolean, info?: AnyObject) => void
+    req: Request,
+    id: string,
+    done: (err: unknown, user?: Express.User | false | null) => void
   ) => {
-    const user = await UserModel.findById(id).lean()
+    const user = await UserModel.findById(id).exec()
     if (!user) {
-      return done(null, false, { message: 'User not found' })
+      req.flash('error', 'User not found')
+      return done(null, false)
     }
     done(null, user)
   }

@@ -4,11 +4,14 @@ import multer from 'multer'
 import { normalize, schema } from 'normalizr'
 import path from 'path'
 
-import ChatContainerMongodb from '../Containers/DAOs/chats/ChatContainerMongodb'
+import cli from '../cli'
+import { ChatDAOFactory } from '../Factories/ChatDAOFactory'
+import ChatRepo from '../Repositories/ChatRepo'
 
+const args = cli(process.argv)
 class ChatsController {
   staticFolder: string
-  static contenedor: ChatContainerMongodb
+  static repo: ChatRepo
   storage: multer.StorageEngine
   upload: multer.Multer
 
@@ -17,7 +20,7 @@ class ChatsController {
 
     fs.mkdir(this.staticFolder, { recursive: true })
 
-    ChatsController.contenedor = new ChatContainerMongodb()
+    ChatsController.repo = new ChatRepo(new ChatDAOFactory(), args.instance)
 
     this.storage = multer.diskStorage({
       destination: (req, file, cb) => {
@@ -51,7 +54,7 @@ class ChatsController {
       messages: [messageEntity],
     })
 
-    const chats = await ChatsController.contenedor.getAll()
+    const chats = await ChatsController.repo.getAll()
 
     const normalizedData = normalize(
       { id: 'messages', messages: chats },
@@ -69,7 +72,7 @@ class ChatsController {
   async getId(req: Request, res: Response) {
     const id = req.params.id
     try {
-      const message = await ChatsController.contenedor.getById(id)
+      const message = await ChatsController.repo.getById(id)
       res.json(message)
     } catch (error) {
       res.status(404).json({ error: 'Mensaje no encontrado' })
@@ -84,7 +87,7 @@ class ChatsController {
       if (file && !data.avatar) {
         parsedData.avatar = file.path.replace(/(.*?)public/, '')
       }
-      const id = await ChatsController.contenedor.save(parsedData)
+      const id = await ChatsController.repo.dao.save(parsedData)
       if (redirect === true) {
         return res.redirect(302, '/')
       }
@@ -95,7 +98,7 @@ class ChatsController {
   async putId(req: Request, res: Response) {
     const id = req.params.id
     const reqData = { ...req.body }
-    const actual = await ChatsController.contenedor.getById(id)
+    const actual = await ChatsController.repo.getById(id)
     const file = req.file
 
     if (!actual) {
@@ -106,7 +109,7 @@ class ChatsController {
     if (file) {
       parsedChat.avatar = file.path.replace('public', '')
     }
-    await ChatsController.contenedor.update(id, parsedChat)
+    await ChatsController.repo.dao.update(id, parsedChat)
 
     res.json({ ...parsedChat, id })
   }
@@ -115,8 +118,8 @@ class ChatsController {
     const id = req.params.id
     res.send(
       id
-        ? await ChatsController.contenedor.deleteById(id)
-        : await ChatsController.contenedor.deleteAll()
+        ? await ChatsController.repo.dao.deleteById(id)
+        : await ChatsController.repo.dao.deleteAll()
     )
   }
 }

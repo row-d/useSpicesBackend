@@ -3,7 +3,7 @@ import express from 'express'
 import session from 'express-session'
 import passport from 'passport'
 
-import AuthContainerMongodb from '../../../Containers/DAOs/auth/AuthContainerMongodb'
+import AuthContainerMongodb from '../../../DAOs/Auth/AuthDAOMongodb'
 import isAuthenticated from '../../../middlewares/isAuthenticated'
 import { loginStrategy } from './controllers/loginStrategy'
 import { deserialize, serialize } from './controllers/serial'

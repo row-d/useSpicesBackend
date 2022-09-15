@@ -5,9 +5,9 @@ export default function cli(argv = process.argv) {
     .options({
       port: {
         alias: 'p',
-        default: Number(process.env.PORT) || 8080,
+        default: process.env.PORT || '8080',
         describe: 'Port to run the server on',
-        type: 'number',
+        type: 'string',
       },
       mode: {
         alias: 'm',
@@ -15,6 +15,13 @@ export default function cli(argv = process.argv) {
         describe: 'Mode to run the server in',
         type: 'string',
         choices: ['fork', 'cluster'],
+      },
+      instance: {
+        alias: 'i',
+        default: 'memory',
+        describe: 'Instance to run the server with',
+        type: 'string',
+        choices: ['memory', 'mongodb'],
       },
     })
     .parseSync()

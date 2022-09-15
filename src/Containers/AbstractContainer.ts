@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import ContainerId from './types/ContainerId'
-
 export default interface AbstractContainer<Input> {
-  save(Data: Input | Input[]): Promise<any>
-  update(ID: ContainerId, Data: Input): Promise<any>
-  getById(ID: ContainerId): Promise<any>
-  getAll(): Promise<Array<any>>
-  deleteById(ID: ContainerId): Promise<any>
-  deleteAll(): Promise<any>
+  save(
+    Data: Input | Input[]
+  ): Promise<Input | string | Array<Input | string> | null>
+  update(id: string, Data: Partial<Input>): Promise<Input | null>
+  getById(id: string): Promise<Input | null>
+  getAll(): Promise<Input[] | null>
+  deleteById(id: string): Promise<void | null>
+  deleteAll(): Promise<void | null>
 }

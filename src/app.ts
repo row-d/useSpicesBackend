@@ -10,7 +10,7 @@ import server from './server'
 const args = cli(process.argv)
 
 if (cluster.isPrimary && args.mode === 'cluster') {
-  for (let i = 0; i < os.cpus().length; i++) {
+  for (const _ of os.cpus()) {
     cluster.fork()
   }
   cluster.on('exit', (worker, code, signal) => {
@@ -25,7 +25,7 @@ if (cluster.isPrimary && args.mode === 'cluster') {
   const envMode = process.env.NODE_ENV || 'development'
 
   server.listen(port, () => {
-    console.log(`Local: ${chalk.yellowBright(`http://localhost:${port}`)}`)
+    console.log('Local: ' + chalk.yellowBright(`http://localhost:${port}`))
     networkAddress &&
       console.log(
         `Network (eth0): ${chalk.yellowBright(

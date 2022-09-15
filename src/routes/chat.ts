@@ -12,8 +12,8 @@ export default class ChatAPI {
     this.route = express.Router()
     this.route.use((req, res, next) => {
       res.on('finish', () => {
-        if (res.statusCode >= 400) {
-          logger.error(
+        if (res.statusCode >= 500) {
+          logger.warn(
             `Product route : ${req.method} ${req.url} - ${res.statusCode} ${res.statusMessage}`
           )
         }

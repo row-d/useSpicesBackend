@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose'
 
+import logger from '../logger'
 import AbstractContainer from './AbstractContainer'
-import ContainerId from './types/ContainerId'
 
 export class ContainerMongodb<Input> implements AbstractContainer<Input> {
   collection: string
@@ -16,7 +16,7 @@ export class ContainerMongodb<Input> implements AbstractContainer<Input> {
     collection: string,
     connectionURI: string,
     modelName: string,
-    schema: mongoose.SchemaDefinition
+    schema: mongoose.SchemaDefinition<Input>
   ) {
     this.collection = collection
     this.connectionURL = connectionURI
@@ -27,26 +27,56 @@ export class ContainerMongodb<Input> implements AbstractContainer<Input> {
   }
 
   async save(Data: Input | Input[]) {
-    return await this.Model.create(Data)
+    try {
+      return await this.Model.create(Data)
+    } catch (error) {
+      logger.error(error)
+      return null
+    }
   }
 
-  async update(ID: ContainerId, Data: Input) {
-    return await this.Model.findByIdAndUpdate(ID, Data).lean()
+  async update(id: string, Data: Partial<Input>) {
+    try {
+      return this.Model.findByIdAndUpdate(id, Data)
+    } catch (error) {
+      logger.error(error)
+      return null
+    }
   }
 
-  async getById(ID: ContainerId) {
-    return await this.Model.findById(ID).lean()
+  async getById(id: string) {
+    try {
+      return this.Model.findById(id) || null
+    } catch (error) {
+      logger.error(error)
+      return null
+    }
   }
 
   async getAll() {
-    return await this.Model.find().lean()
+    try {
+      return this.Model.find()
+    } catch (error) {
+      logger.error(error)
+      return null
+    }
   }
 
-  async deleteById(ID: ContainerId) {
-    return await this.Model.findByIdAndDelete(ID).lean()
+  async deleteById(id: string) {
+    try {
+      this.Model.findByIdAndDelete(id)
+    } catch (error) {
+      logger.error(error)
+      return null
+    }
   }
 
   async deleteAll() {
-    return await this.Model.deleteMany().lean()
+    try {
+      this.Model.deleteMany()
+    } catch (error) {
+      logger.error(error)
+      return null
+    }
   }
 }
