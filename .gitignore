@@ -104,7 +104,8 @@ dist
 .tern-port
 
 !src/desafios/productos.txt
-*.txt
+src/public/thumbnails
+/*.txt
 *.json
 !package*.json
 !tsconfig.json
