@@ -55,7 +55,7 @@ app.use('/api/randoms', randomsRoute)
 app.get('/api/productos-test', (req, res) => {
   res.json(
     Array.from({ length: 5 }, () => ({
-      _id: faker.database.mongodbObjectId(),
+      id: faker.database.mongodbObjectId(),
       title: faker.commerce.product(),
       price: faker.commerce.price(),
       thumbnail: faker.image.imageUrl(480, 480, undefined, true),

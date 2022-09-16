@@ -12,7 +12,7 @@ export const loginStrategy = (User: mongoose.Model<AuthUser>) =>
   new LocalStrategy(
     { usernameField: 'email' },
     async (email, password, done) => {
-      const user = await User.findOne({ email: email }).lean()
+      const user = await User.findOne({ email: email }).exec()
       if (!user) {
         return done(null, false, { message: 'User not found' })
       }

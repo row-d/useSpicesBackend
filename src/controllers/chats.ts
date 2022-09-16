@@ -47,7 +47,7 @@ class ChatsController {
     const messageEntity = new schema.Entity(
       'messages',
       { authorEntity },
-      { idAttribute: '_id' }
+      { idAttribute: 'id' }
     )
 
     const chatEntity = new schema.Entity('chat', {

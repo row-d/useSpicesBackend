@@ -1,28 +1,28 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import logger from '../logger'
 import AbstractContainer from './AbstractContainer'
 
 export default class ContainerMemory<Input>
   implements AbstractContainer<Input>
 {
-  private _data: Map<string, Input>
+  private _data: Map<string, Input & { id: string }>
 
   constructor() {
     this._data = new Map()
   }
 
   async save(Data: Input | Input[]) {
-    logger.info('Saving data in memory' + JSON.stringify(Data))
     if (!Array.isArray(Data)) {
       const id = uuidv4()
-      this._data.set(id, Data)
-      return id
+      const hydrated = { ...Data, id }
+      this._data.set(id, hydrated)
+      return hydrated
     }
-    return Data.map((data) => {
+    return Data.map((d: Input) => {
       const id = uuidv4()
-      this._data.set(id, data)
-      return id
+      const hydrated = { ...d, id }
+      this._data.set(id, hydrated)
+      return hydrated
     })
   }
 
@@ -37,12 +37,10 @@ export default class ContainerMemory<Input>
   }
 
   async getById(id: string) {
-    logger.info('Looking for ' + id)
     return this._data.get(id) || null
   }
 
   async getAll() {
-    logger.info('Getting all data' + JSON.stringify(this._data))
     return [...this._data.values()]
   }
 

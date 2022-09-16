@@ -8,7 +8,7 @@ const postForm = document.getElementById('postProduct')
 const productsBody = document.querySelector('#products tbody')
 // template helpers
 function getRowTemplate(product) {
-  const template = `<td>${product._id}</td>
+  const template = `<td>${product.id}</td>
   <td>${product.title}</td>
   <td>${product.price}</td>`
 
@@ -34,11 +34,7 @@ function getChatBoxTemplate(data) {
 }
 // Normalizr Schemas/Entities
 const author = new schema.Entity('authors', {}, { idAttribute: 'email' })
-const message = new schema.Entity(
-  'messages',
-  { author },
-  { idAttribute: '_id' }
-)
+const message = new schema.Entity('messages', { author }, { idAttribute: 'id' })
 
 const chatSchema = new schema.Entity('chat', {
   messages: [message],
@@ -51,12 +47,8 @@ const socket = io() // eslint-disable-line
 // save message function
 async function getMessages() {
   const response = await fetch('/api/chats')
-  console.log(
-    'porcentaje : ' + Math.round(+response.headers.get('x-percentage'))
-  )
   const data = await response.json()
   const denormalized = denormalize(data.result, chatSchema, data.entities)
-  console.log(data)
   return denormalized
 }
 
