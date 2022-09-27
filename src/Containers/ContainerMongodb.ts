@@ -1,11 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose'
 
 import logger from '../logger'
 import AbstractContainer from './AbstractContainer'
 
-export class ContainerMongodb<Input> implements AbstractContainer<Input> {
-  collection: string
+export default class ContainerMongodb<Input>
+  implements
+    AbstractContainer<
+      Input,
+      mongoose.HydratedDocument<Input>,
+      mongoose.Types.ObjectId
+    >
+{
+  collectionName: string
   connectionURL: string
   db: mongoose.Connection
   modelName: string
@@ -13,17 +19,20 @@ export class ContainerMongodb<Input> implements AbstractContainer<Input> {
   Model: mongoose.Model<Input>
 
   constructor(
-    collection: string,
+    collectionName: string,
     connectionURI: string,
     modelName: string,
     schema: mongoose.SchemaDefinition<Input>
   ) {
-    this.collection = collection
+    if (!(collectionName || connectionURI || modelName || schema)) {
+      throw new Error('Missing arguments')
+    }
+    this.collectionName = collectionName
     this.connectionURL = connectionURI
     this.modelName = modelName
     this.schema = new mongoose.Schema<Input>(schema)
-    this.db = mongoose.createConnection(connectionURI, { keepAlive: true })
-    this.Model = this.db.model<Input>(modelName, this.schema, collection)
+    this.db = mongoose.createConnection(connectionURI)
+    this.Model = this.db.model<Input>(modelName, this.schema, collectionName)
   }
 
   async save(Data: Input | Input[]) {
@@ -35,18 +44,19 @@ export class ContainerMongodb<Input> implements AbstractContainer<Input> {
     }
   }
 
-  async update(id: string, Data: Partial<Input>) {
+  async update(id: mongoose.Types.ObjectId, Data: Partial<Input>) {
     try {
-      return this.Model.findByIdAndUpdate(id, Data)
+      await this.Model.findByIdAndUpdate(id, Data).exec()
+      return await this.Model.findById(id)
     } catch (error) {
       logger.error(error)
       return null
     }
   }
 
-  async getById(id: string) {
+  async getById(id: mongoose.Types.ObjectId) {
     try {
-      return this.Model.findById(id) || null
+      return await this.Model.findById(id)
     } catch (error) {
       logger.error(error)
       return null
@@ -55,28 +65,28 @@ export class ContainerMongodb<Input> implements AbstractContainer<Input> {
 
   async getAll() {
     try {
-      return this.Model.find()
+      return await this.Model.find()
     } catch (error) {
       logger.error(error)
-      return null
+      return []
     }
   }
 
-  async deleteById(id: string) {
+  async deleteById(id: mongoose.Types.ObjectId) {
     try {
-      this.Model.findByIdAndDelete(id)
+      await this.Model.findByIdAndDelete(id)
     } catch (error) {
       logger.error(error)
-      return null
     }
+    return null
   }
 
   async deleteAll() {
     try {
-      this.Model.deleteMany()
+      await this.Model.deleteMany()
     } catch (error) {
       logger.error(error)
-      return null
     }
+    return null
   }
 }

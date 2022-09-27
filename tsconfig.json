@@ -17,5 +17,10 @@
     "src/**/*",
     "migrations",
     "cli.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/__test__",
+    "test"
   ]
 }
