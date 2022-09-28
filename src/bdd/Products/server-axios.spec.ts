@@ -74,7 +74,3 @@ describe('Products API /api/products', () => {
     })
   })
 })
-
-after(() => {
-  console.log('Test finished with Axios agent')
-})
