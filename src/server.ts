@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 })
 // Routes
 
-app.use('/', new auth().route)
+app.use(new auth().route)
 app.use('/api/chats', new chat().route)
 app.use('/api/products', new products().route)
 app.use('/api/randoms', randomsRoute)

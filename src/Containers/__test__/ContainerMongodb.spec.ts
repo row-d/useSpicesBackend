@@ -1,6 +1,6 @@
-import { strict as assert } from 'assert'
+// import { strict as assert } from 'assert'
+import { expect } from 'chai'
 import { beforeEach, describe, it } from 'mocha'
-import mongoose from 'mongoose'
 
 import ContainerMongodb from '../ContainerMongodb'
 
@@ -23,7 +23,8 @@ describe('ContainerMongodb', () => {
 
   describe('constructor', () => {
     it('should be return a instance of ContainerMongodb', () => {
-      assert.ok(container)
+      // assert.ok(container)
+      expect(container).to.be.instanceOf(ContainerMongodb)
     })
   })
 
@@ -32,7 +33,8 @@ describe('ContainerMongodb', () => {
       const data = { name: 'test', age: 10 }
       const result = await container.save(data)
 
-      result && assert.equal('_id' in result, true)
+      // result && assert.equal('_id' in result, true)
+      result && expect(result).to.have.property('_id')
     })
 
     it('should be return the same array, but for each object with an id', async () => {
@@ -42,11 +44,13 @@ describe('ContainerMongodb', () => {
       }))
       const results = await container.save(data)
 
-      assert.equal(Array.isArray(results), true)
+      // assert.equal(Array.isArray(results), true)
+      expect(results).to.be.an('array')
 
       Array.isArray(results) &&
         results.forEach((result) => {
-          assert.equal('_id' in result, true)
+          // assert.equal('_id' in result, true)
+          expect(result).to.have.property('_id')
         })
     })
   })
@@ -55,7 +59,8 @@ describe('ContainerMongodb', () => {
     it('should return an empty array', async () => {
       await container.deleteAll()
       const result = await container.getAll()
-      assert.deepEqual(result, [])
+      // assert.deepEqual(result, [])
+      expect(result).to.be.an('array').that.is.empty
     })
     it('should return the same array that was saved', async () => {
       await container.deleteAll()
@@ -65,12 +70,15 @@ describe('ContainerMongodb', () => {
       }))
       const containerObject = await container.save(data)
 
-      assert.equal(Array.isArray(containerObject), true)
+      // assert.equal(Array.isArray(containerObject), true)
+      expect(containerObject).to.be.an('array')
 
       if (Array.isArray(containerObject)) {
-        assert.equal(containerObject.length, data.length)
+        // assert.equal(containerObject.length, data.length)
+        expect(containerObject).to.have.lengthOf(data.length)
         const result = await container.getAll()
-        assert.equal(result.length, 10)
+        // assert.equal(result.length, 10)
+        expect(result).to.have.lengthOf(10)
       }
     })
   })
@@ -84,7 +92,8 @@ describe('ContainerMongodb', () => {
       await container.save(data)
       await container.deleteAll()
       const result = await container.getAll()
-      assert.deepEqual(result, [])
+      // assert.deepEqual(result, [])
+      expect(result).to.be.an('array').that.is.empty
     })
   })
 
@@ -93,21 +102,24 @@ describe('ContainerMongodb', () => {
       const data = { name: 'test', age: 10 }
       const containerObject = await container.save(data)
 
-      assert.equal(Array.isArray(containerObject), false)
+      // assert.equal(Array.isArray(containerObject), false)
+      expect(containerObject).to.be.an('object')
+      expect(containerObject).not.to.be.an('array')
 
       if (!Array.isArray(containerObject) && containerObject !== null) {
-        const objectRetrieved = await container.getById(containerObject._id)
+        const objectRetrieved = await container.getById(
+          containerObject._id.toString()
+        )
+        // objectRetrieved && assert.deepEqual(objectRetrieved._id, containerObject._id)
         objectRetrieved &&
-          assert.deepEqual(objectRetrieved._id, containerObject._id)
+          expect(objectRetrieved._id).to.deep.equal(containerObject._id)
       }
     })
 
     it('should return null if the id does not exist', async () => {
-      const result = await container.getById({
-        _bsontype: 'ObjectID',
-        id: Buffer.alloc(12),
-      } as mongoose.Types.ObjectId)
-      assert.equal(result, null)
+      const result = await container.getById('asdasdasd')
+      // assert.equal(result, null)
+      expect(result).to.be.null
     })
   })
 
@@ -116,13 +128,17 @@ describe('ContainerMongodb', () => {
       const data = { name: 'test', age: 10 }
       const containerObject = await container.save(data)
 
-      assert.equal(Array.isArray(containerObject), false)
+      // assert.equal(Array.isArray(containerObject), false)
+      expect(containerObject).to.be.an('object')
+      expect(containerObject).not.to.be.an('array')
 
       if (!Array.isArray(containerObject) && containerObject) {
         const result = await container.deleteById(containerObject.id)
         const objectRetrieved = await container.getById(containerObject.id)
-        assert.equal(result, null)
-        assert.equal(objectRetrieved, null)
+        // assert.equal(result, null)
+        expect(result).to.be.null
+        // assert.equal(objectRetrieved, null)
+        expect(objectRetrieved).to.be.null
       }
     })
   })
@@ -131,15 +147,19 @@ describe('ContainerMongodb', () => {
       const data = { name: 'test', age: 10 }
       const containerObject = await container.save(data)
 
-      assert.equal(Array.isArray(containerObject), false)
+      // assert.equal(Array.isArray(containerObject), false)
+      expect(containerObject).to.be.an('object')
+      expect(containerObject).not.to.be.an('array')
 
       if (!Array.isArray(containerObject) && containerObject) {
         const result = await container.update(containerObject.id, {
           name: 'test2',
         })
-        assert.notEqual(result, null)
+        // assert.notEqual(result, null)
+        expect(result).not.to.be.null
 
-        result !== null && assert.equal(result.name, 'test2')
+        // result !== null && assert.equal(result.name, 'test2')
+        result !== null && expect(result.name).to.equal('test2')
       }
     })
   })

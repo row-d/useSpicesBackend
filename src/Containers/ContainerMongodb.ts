@@ -4,12 +4,7 @@ import logger from '../logger'
 import AbstractContainer from './AbstractContainer'
 
 export default class ContainerMongodb<Input>
-  implements
-    AbstractContainer<
-      Input,
-      mongoose.HydratedDocument<Input>,
-      mongoose.Types.ObjectId
-    >
+  implements AbstractContainer<Input, mongoose.HydratedDocument<Input>>
 {
   collectionName: string
   connectionURL: string
@@ -44,7 +39,7 @@ export default class ContainerMongodb<Input>
     }
   }
 
-  async update(id: mongoose.Types.ObjectId, Data: Partial<Input>) {
+  async update(id: string, Data: Partial<Input>) {
     try {
       await this.Model.findByIdAndUpdate(id, Data).exec()
       return await this.Model.findById(id)
@@ -54,7 +49,7 @@ export default class ContainerMongodb<Input>
     }
   }
 
-  async getById(id: mongoose.Types.ObjectId) {
+  async getById(id: string) {
     try {
       return await this.Model.findById(id)
     } catch (error) {
@@ -72,7 +67,7 @@ export default class ContainerMongodb<Input>
     }
   }
 
-  async deleteById(id: mongoose.Types.ObjectId) {
+  async deleteById(id: string) {
     try {
       await this.Model.findByIdAndDelete(id)
     } catch (error) {

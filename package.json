@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/chai": "^4.3.3",
     "@types/compression": "^1.7.2",
     "@types/connect-flash": "^0.0.37",
     "@types/express": "^4.17.13",

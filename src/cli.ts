@@ -5,7 +5,7 @@ export default function cli(argv = process.argv) {
     .options({
       port: {
         alias: 'p',
-        default: process.env.PORT || '8080',
+        default: process.env.PORT || '3000',
         describe: 'Port to run the server on',
         type: 'string',
       },

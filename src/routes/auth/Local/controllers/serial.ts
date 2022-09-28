@@ -1,11 +1,13 @@
-import { Express, Request } from 'express'
+import express, { Express, Request } from 'express'
 import mongoose from 'mongoose'
 
-type AuthUser = {
-  email: string
-  password: string
-  _id?: string
-}
+import AuthDAOMongodb from '../../../../DAOs/Auth/AuthDAOMongodb'
+
+// type AuthUser = {
+//   email: string
+//   password: string
+//   _id?: string
+// }
 
 export const serialize = (
   user: Express.User,
@@ -14,17 +16,19 @@ export const serialize = (
   done(null, user._id)
 }
 
-export const deserialize =
-  (UserModel: mongoose.Model<AuthUser>) =>
-  async (
+// deserialize<TID, TR extends IncomingMessage = express.Request>(fn: (req: TR, id: TID, done: (err: any, user?: Express.User | false | null) => void) => void): void;
+
+export function deserialize(DAO: AuthDAOMongodb) {
+  return async (
     req: Request,
-    id: string,
+    id: mongoose.Types.ObjectId,
     done: (err: unknown, user?: Express.User | false | null) => void
   ) => {
-    const user = await UserModel.findById(id).exec()
+    const user = (await DAO.Model.findById(id).lean()) as Express.User
     if (!user) {
       req.flash('error', 'User not found')
       return done(null, false)
     }
     done(null, user)
   }
+}

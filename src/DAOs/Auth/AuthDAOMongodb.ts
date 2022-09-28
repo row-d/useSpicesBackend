@@ -1,4 +1,4 @@
-import { ContainerMongodb } from '../../Containers/ContainerMongodb'
+import ContainerMongodb from '../../Containers/ContainerMongodb'
 import AuthUserModel from '../../Models/AuthUserModel'
 import { AuthUser } from '../../types/AuthUser'
 

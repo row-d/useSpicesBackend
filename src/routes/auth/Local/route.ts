@@ -30,10 +30,10 @@ export default class AuthLocalRoute {
     this.route.use(passport.session())
     this.route.use(flash())
 
-    passport.use('login', loginStrategy(this.container.Model))
-    passport.use('signup', signupStrategy(this.container.Model))
+    passport.use('login', loginStrategy(this.container))
+    passport.use('signup', signupStrategy(this.container))
     passport.serializeUser(serialize)
-    passport.deserializeUser(deserialize(this.container.Model))
+    passport.deserializeUser(deserialize(this.container))
     this.route.post(
       '/auth/login',
       passport.authenticate('login', {

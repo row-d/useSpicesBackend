@@ -11,12 +11,7 @@ export default class ChatDTO {
   }
   text: string
   constructor(message: Message) {
-    if (message.id) {
-      this.id = message.id
-    }
-    if (message._id) {
-      this.id = message._id
-    }
+    this.id = message._id ? message._id : message.id
     this.author = message.author
     this.text = message.text
   }

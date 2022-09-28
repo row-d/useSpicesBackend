@@ -54,7 +54,7 @@ class ChatsController {
       messages: [messageEntity],
     })
 
-    const chats = await ChatsController.repo.getAll()
+    const chats = await ChatsController.repo.dao.getAll()
 
     const normalizedData = normalize(
       { id: 'messages', messages: chats },
@@ -72,7 +72,7 @@ class ChatsController {
   async getId(req: Request, res: Response) {
     const id = req.params.id
     try {
-      const message = await ChatsController.repo.getById(id)
+      const message = await ChatsController.repo.dao.getById(id)
       res.json(message)
     } catch (error) {
       res.status(404).json({ error: 'Mensaje no encontrado' })
@@ -98,7 +98,7 @@ class ChatsController {
   async putId(req: Request, res: Response) {
     const id = req.params.id
     const reqData = { ...req.body }
-    const actual = await ChatsController.repo.getById(id)
+    const actual = await ChatsController.repo.dao.getById(id)
     const file = req.file
 
     if (!actual) {

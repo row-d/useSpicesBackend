@@ -32,6 +32,7 @@ if (cluster.isPrimary && args.mode === 'cluster') {
           `http://${networkAddress}:${port}`
         )}`
       )
+    console.log(`Using ${chalk.yellowBright(args.instance)} instance`)
     console.log(`Execution Mode: ${chalk.yellowBright(args.mode)}`)
     console.log(`Environment Mode: ${chalk.yellowBright(envMode)}`)
     console.log(`Press ${chalk.redBright('CTRL-C')} to stop`)

@@ -41,17 +41,16 @@ class ProductsController {
   }
 
   async getData(req: Request, res: Response) {
-    res.json(await ProductsController.repo.getAll())
+    res.json(await ProductsController.repo.dao.getAll())
   }
 
   async getId(req: Request, res: Response) {
     const id = req.params.id
-    try {
-      const producto = await ProductsController.repo.getById(id)
-      res.json(producto)
-    } catch (error) {
-      res.status(404).json({ error: 'Producto no encontrado' })
-    }
+
+    const producto = await ProductsController.repo.dao.getById(id)
+    producto
+      ? res.json(producto)
+      : res.status(404).json({ error: 'Producto no encontrado' })
   }
 
   postData(redirect = false) {
@@ -63,18 +62,18 @@ class ProductsController {
       if (file) {
         parsedProduct.thumbnail = file.path.replace(/(.*?)public/, '')
       }
-      const id = await ProductsController.repo.dao.save(parsedProduct)
+      const data = await ProductsController.repo.dao.save(parsedProduct)
       if (redirect === true) {
         return res.redirect(302, '/')
       }
-      return res.json(id)
+      return res.json(data)
     }
   }
 
   async putId(req: Request, res: Response) {
     const id = req.params.id
     const reqData = { ...req.body }
-    const actual = await ProductsController.repo.getById(id)
+    const actual = await ProductsController.repo.dao.getById(id)
     const file = req.file
 
     if (!actual) {
@@ -85,9 +84,8 @@ class ProductsController {
     if (file) {
       parsedProduct.thumbnail = file.path.replace('public', '')
     }
-    await ProductsController.repo.dao.update(id, parsedProduct)
 
-    res.json(id)
+    res.json(await ProductsController.repo.dao.update(id, parsedProduct))
   }
 
   async deleteId(req: Request, res: Response) {

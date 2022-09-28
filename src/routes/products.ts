@@ -29,8 +29,8 @@ export default class ProductRoute {
     this.route.use(express.json())
     this.route.use(express.urlencoded({ extended: true }))
 
-    this.route.get('/', this.controller.getData)
-    this.route.get('/:id', this.controller.getId)
+    this.route.get('/', this.controller.getData.bind(this.controller))
+    this.route.get('/:id', this.controller.getId.bind(this.controller))
     this.route.post(
       '/',
       this.controller.upload.single('thumbnail'),
@@ -39,8 +39,8 @@ export default class ProductRoute {
     this.route.put(
       '/:id',
       this.controller.upload.single('thumbnail'),
-      this.controller.putId
+      this.controller.putId.bind(this.controller)
     )
-    this.route.delete('/:id', this.controller.deleteId)
+    this.route.delete('/:id', this.controller.deleteId.bind(this.controller))
   }
 }

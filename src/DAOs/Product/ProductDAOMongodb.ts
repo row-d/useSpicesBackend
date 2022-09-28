@@ -1,5 +1,5 @@
-import { ContainerMongodb } from '../../Containers/ContainerMongodb'
-import ProductModel from '../../Models/ProductModel'
+import ContainerMongodb from '../../Containers/ContainerMongodb'
+import ProductModel from '../../Models/Product/mongooseModel'
 import { Product } from '../../types/Product'
 
 export default class ProductDAOMongodb extends ContainerMongodb<Product> {

@@ -13,8 +13,7 @@ export class ProductDAOFactory {
 
   getDAO(type?: string): ProductDAOs {
     if (!ProductDAOFactory.DAO) {
-      const instance = ProductDAOFactory.instances[type || 'memory']
-      ProductDAOFactory.DAO = instance()
+      ProductDAOFactory.DAO = ProductDAOFactory.instances[type || 'memory']()
     }
     return ProductDAOFactory.DAO
   }

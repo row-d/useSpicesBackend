@@ -1,22 +1,23 @@
 import ProductDTO from '../DTOs/ProductDTO'
 import { ProductDAOFactory, ProductDAOs } from '../Factories/ProductsDAOFactory'
-import { Product } from '../types/Product'
 
 export default class ProductRepo {
-  factory: ProductDAOFactory
   dao: ProductDAOs
-  constructor(factory: ProductDAOFactory, instanceChoice = 'memory') {
-    this.factory = factory
-    this.dao = this.factory.getDAO(instanceChoice)
-  }
-
-  async getAll() {
-    const chats = await this.dao.getAll()
-    return chats?.map((product) => new ProductDTO(product))
-  }
-
-  async getById(id: string) {
-    const chat = await this.dao.getById(id)
-    return new ProductDTO(chat as Product)
+  constructor(factory: ProductDAOFactory, instanceChoice?: string) {
+    this.dao = new Proxy(factory.getDAO(instanceChoice), {
+      get: function (target, prop) {
+        if (typeof Reflect.get(target, prop) === 'function') {
+          return new Proxy(Reflect.get(target, prop), {
+            apply: async function (target, thisArg, argumentsList) {
+              const dao = await target.apply(thisArg, argumentsList)
+              if (Array.isArray(dao))
+                return dao.map((product) => new ProductDTO(product))
+              if (dao) return new ProductDTO(dao)
+              return dao
+            },
+          })
+        }
+      },
+    })
   }
 }

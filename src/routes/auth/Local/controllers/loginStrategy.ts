@@ -1,18 +1,18 @@
-import mongoose from 'mongoose'
 import { Strategy as LocalStrategy } from 'passport-local'
 
+import AuthDAOMongodb from '../../../../DAOs/Auth/AuthDAOMongodb'
 import { compareHash } from './helpers/hashing'
 
-type AuthUser = {
-  email: string
-  password: string
-}
+// type AuthUser = {
+//   email: string
+//   password: string
+// }
 
-export const loginStrategy = (User: mongoose.Model<AuthUser>) =>
+export const loginStrategy = (DAO: AuthDAOMongodb) =>
   new LocalStrategy(
     { usernameField: 'email' },
     async (email, password, done) => {
-      const user = await User.findOne({ email: email }).exec()
+      const user = await DAO.Model.findOne({ email })
       if (!user) {
         return done(null, false, { message: 'User not found' })
       }
