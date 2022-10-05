@@ -13,7 +13,7 @@ export const serialize = (
   user: Express.User,
   done: (err: null, id?: unknown) => void
 ) => {
-  done(null, user._id)
+  done(null, user.id)
 }
 
 // deserialize<TID, TR extends IncomingMessage = express.Request>(fn: (req: TR, id: TID, done: (err: any, user?: Express.User | false | null) => void) => void): void;

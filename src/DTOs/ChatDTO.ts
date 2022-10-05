@@ -5,7 +5,7 @@ export default class ChatDTO {
   author: {
     email: string
     nombre: string
-    apelido: string
+    apellido: string
     alias: string
     avatar: string
   }

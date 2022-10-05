@@ -3,15 +3,11 @@ import fs from 'fs/promises'
 import multer from 'multer'
 import path from 'path'
 
-import cli from '../cli'
-import { ProductDAOFactory } from '../Factories/ProductsDAOFactory'
-import ProductRepo from '../Repositories/ProductRepo'
-
-const args = cli(process.argv)
+import ProductService from '../Services/ProductService'
 
 class ProductsController {
   staticFolder: string
-  static repo: ProductRepo
+  service: ProductService
   storage: multer.StorageEngine
   upload: multer.Multer
 
@@ -20,10 +16,7 @@ class ProductsController {
 
     fs.mkdir(this.staticFolder, { recursive: true })
 
-    ProductsController.repo = new ProductRepo(
-      new ProductDAOFactory(),
-      args.instance
-    )
+    this.service = new ProductService()
 
     this.storage = multer.diskStorage({
       destination: (req, file, cb) => {
@@ -41,13 +34,13 @@ class ProductsController {
   }
 
   async getData(req: Request, res: Response) {
-    res.json(await ProductsController.repo.dao.getAll())
+    res.json(await this.service.getAll())
   }
 
   async getId(req: Request, res: Response) {
     const id = req.params.id
 
-    const producto = await ProductsController.repo.dao.getById(id)
+    const producto = await this.service.getById(id)
     producto
       ? res.json(producto)
       : res.status(404).json({ error: 'Producto no encontrado' })
@@ -62,7 +55,7 @@ class ProductsController {
       if (file) {
         parsedProduct.thumbnail = file.path.replace(/(.*?)public/, '')
       }
-      const data = await ProductsController.repo.dao.save(parsedProduct)
+      const data = await this.service.save(parsedProduct)
       if (redirect === true) {
         return res.redirect(302, '/')
       }
@@ -73,7 +66,7 @@ class ProductsController {
   async putId(req: Request, res: Response) {
     const id = req.params.id
     const reqData = { ...req.body }
-    const actual = await ProductsController.repo.dao.getById(id)
+    const actual = await this.service.getById(id)
     const file = req.file
 
     if (!actual) {
@@ -85,12 +78,12 @@ class ProductsController {
       parsedProduct.thumbnail = file.path.replace('public', '')
     }
 
-    res.json(await ProductsController.repo.dao.update(id, parsedProduct))
+    res.json(await this.service.update(id, parsedProduct))
   }
 
   async deleteId(req: Request, res: Response) {
     const id = req.params.id
-    const deletedId = await ProductsController.repo.dao.deleteById(id)
+    const deletedId = await this.service.deleteById(id)
     res.json({ status: 200, message: deletedId })
   }
 }

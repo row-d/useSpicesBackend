@@ -4,14 +4,11 @@ import multer from 'multer'
 import { normalize, schema } from 'normalizr'
 import path from 'path'
 
-import cli from '../cli'
-import { ChatDAOFactory } from '../Factories/ChatDAOFactory'
-import ChatRepo from '../Repositories/ChatRepo'
+import ChatService from '../Services/ChatService'
 
-const args = cli(process.argv)
 class ChatsController {
   staticFolder: string
-  static repo: ChatRepo
+  service: ChatService
   storage: multer.StorageEngine
   upload: multer.Multer
 
@@ -20,7 +17,7 @@ class ChatsController {
 
     fs.mkdir(this.staticFolder, { recursive: true })
 
-    ChatsController.repo = new ChatRepo(new ChatDAOFactory(), args.instance)
+    this.service = new ChatService()
 
     this.storage = multer.diskStorage({
       destination: (req, file, cb) => {
@@ -54,7 +51,7 @@ class ChatsController {
       messages: [messageEntity],
     })
 
-    const chats = await ChatsController.repo.dao.getAll()
+    const chats = await this.service.getAll()
 
     const normalizedData = normalize(
       { id: 'messages', messages: chats },
@@ -72,7 +69,7 @@ class ChatsController {
   async getId(req: Request, res: Response) {
     const id = req.params.id
     try {
-      const message = await ChatsController.repo.dao.getById(id)
+      const message = await this.service.getById(id)
       res.json(message)
     } catch (error) {
       res.status(404).json({ error: 'Mensaje no encontrado' })
@@ -87,7 +84,7 @@ class ChatsController {
       if (file && !data.avatar) {
         parsedData.avatar = file.path.replace(/(.*?)public/, '')
       }
-      const id = await ChatsController.repo.dao.save(parsedData)
+      const id = await this.service.save(parsedData)
       if (redirect === true) {
         return res.redirect(302, '/')
       }
@@ -98,7 +95,7 @@ class ChatsController {
   async putId(req: Request, res: Response) {
     const id = req.params.id
     const reqData = { ...req.body }
-    const actual = await ChatsController.repo.dao.getById(id)
+    const actual = await this.service.getById(id)
     const file = req.file
 
     if (!actual) {
@@ -109,7 +106,7 @@ class ChatsController {
     if (file) {
       parsedChat.avatar = file.path.replace('public', '')
     }
-    await ChatsController.repo.dao.update(id, parsedChat)
+    await this.service.update(id, parsedChat)
 
     res.json({ ...parsedChat, id })
   }
@@ -117,9 +114,7 @@ class ChatsController {
   async deleteId(req: Request, res: Response) {
     const id = req.params.id
     res.send(
-      id
-        ? await ChatsController.repo.dao.deleteById(id)
-        : await ChatsController.repo.dao.deleteAll()
+      id ? await this.service.deleteById(id) : await this.service.deleteAll()
     )
   }
 }
