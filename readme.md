@@ -14,3 +14,19 @@ deno run ./src/server.ts
 ```bash
 denon start
 ```
+
+# Routes
+
+## GET /colors 
+get an array of colors
+
+## POST /colors 
+post a color
+
+Example:
+
+````json
+{
+  "color":"red"
+}
+```
