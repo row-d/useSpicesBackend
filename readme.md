@@ -3,7 +3,7 @@
 
 Run the following command:
 
-# Normal
+## Normal
 
 ```bash
 deno run ./src/server.ts
