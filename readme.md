@@ -25,7 +25,7 @@ post a color
 
 Example:
 
-````json
+```json
 {
   "color":"red"
 }
